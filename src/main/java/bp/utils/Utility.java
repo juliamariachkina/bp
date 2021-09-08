@@ -17,9 +17,9 @@ public class Utility {
 
     private static final Logger LOG = Logger.getLogger(Utility.class.getName());
 
-    public static <T extends LocalAbstractObject> Iterator<T> getObjectsIterator(String filePath, Class<T> className) {
+    public static <T extends LocalAbstractObject, S extends T, I extends Iterator<T>> I getObjectsIterator(String filePath, Class<S> className) {
         try {
-            return new StreamGenericAbstractObjectIterator<T>(className, filePath);
+            return (I) new StreamGenericAbstractObjectIterator<T>(className, filePath);
         } catch (Exception e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return null;

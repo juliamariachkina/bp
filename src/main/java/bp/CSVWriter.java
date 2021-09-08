@@ -17,23 +17,23 @@ public class CSVWriter {
         this.filePath = filePath;
     }
 
-    public void writeQueryResults(Map<String, List<RankedAbstractObject>> results, StatisticCounter distComp) throws IOException {
+    public void writeQueryResults(Map<String, List<RankedAbstractObject>> results,
+                                  Map<String, StatisticCounter> locatorToDistComp)
+            throws IOException {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
-        writeAnswer(writer, results);
-        writeDistanceComputations(writer, distComp);
+        writeAnswer(writer, results, locatorToDistComp);
         writer.flush();
     }
 
-    private void writeAnswer(PrintWriter writer, Map<String, List<RankedAbstractObject>> results) {
-        for (Map.Entry<String, List<RankedAbstractObject>> locatorTokNN : results.entrySet()) {
-            writer.println("IDquery;" + locatorTokNN.getKey());
-            for (RankedAbstractObject neighbour : locatorTokNN.getValue()) {
+    private void writeAnswer(PrintWriter writer,
+                             Map<String, List<RankedAbstractObject>> results,
+                             Map<String, StatisticCounter> locatorToDistComp) {
+        for (Map.Entry<String, List<RankedAbstractObject>> locatorToKNN : results.entrySet()) {
+            writer.println("IDquery;" + locatorToKNN.getKey());
+            for (RankedAbstractObject neighbour : locatorToKNN.getValue()) {
                 writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI());
             }
+            writer.println("Number of distance computations:" + locatorToDistComp.get(locatorToKNN.getKey()).getValue());
         }
-    }
-
-    private void writeDistanceComputations(PrintWriter writer, StatisticCounter distComp) {
-        writer.println("Number of distance computations:" + distComp.getValue());
     }
 }

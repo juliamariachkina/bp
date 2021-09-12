@@ -8,7 +8,9 @@ import messif.algorithms.impl.SequentialScan;
 import messif.buckets.CapacityFullException;
 import messif.buckets.LocalBucket;
 import messif.buckets.impl.DiskBlockBucket;
+import messif.buckets.impl.MemoryStorageBucket;
 import messif.objects.LocalAbstractObject;
+import messif.objects.impl.MetaObjectSAPIRWeightedDist2;
 import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
 
@@ -21,7 +23,7 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        createAndStoreLaesaSift();
+        restoreAndExecuteQueriesLaesaMpeg();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -51,6 +53,27 @@ public class Main {
                 "src/main/java/bp/storedAlgos/laesaSift");
     }
 
+    public static void createAndStoreLaesaRandom() throws CapacityFullException, IOException, InstantiationException {
+        createAndStoreAlgorithm("../data/D20_pivot_objects_uniform_distribution.data", ObjectFloatVectorL2.class,
+                MemoryStorageBucket.class, 256, "../data/D20_query_objects_uniform_distribution.data",
+                1000, 30, "../data/D20_data_objects_uniform_distribution.data", 100000,
+                "src/main/java/bp/storedAlgos/laesaRandom");
+    }
+
+    public static void createAndStoreLaesaDecaf() throws CapacityFullException, IOException, InstantiationException {
+        createAndStoreAlgorithm("../data/decaf/pivots-random-2560.data.txt", ObjectFloatVectorL2.class,
+                DiskBlockBucket.class, 256, "../data/decaf/profi-neuralnet-1000-query.data.txt",
+                1000, 30, "../data/decaf/profi-neuralnet-1M.data", 1000000,
+                "src/main/java/bp/storedAlgos/laesaDecaf");
+    }
+
+    public static void createAndStoreLaesaMpeg() throws CapacityFullException, IOException, InstantiationException {
+        createAndStoreAlgorithm("../data/mpeg7/pivots-2560-random.data.txt", MetaObjectSAPIRWeightedDist2.class,
+                DiskBlockBucket.class, 256, "../data/mpeg7/queryset-cophir-1000_sapir2.data.txt",
+                1000, 30, "../data/mpeg7/metaobject1M.data", 1000000,
+                "src/main/java/bp/storedAlgos/laesaMpeg");
+    }
+
     public static <T extends LocalAbstractObject> void restoreAndExecuteQueries(String algoFilePath, Class<T> objectClass,
                                                                                 String queryFilePath, int queryCount,
                                                                                 int k, String dataFilePath,
@@ -63,12 +86,32 @@ public class Main {
         similarityQueryEvaluator.evaluateQueriesAndWriteResult(filePathToStoreResults);
     }
 
-    public static <T extends LocalAbstractObject> void restoreAndExecuteQueriesLaesaSift()
-            throws IOException, ClassNotFoundException {
+    public static void restoreAndExecuteQueriesLaesaSift() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaSift", ObjectFloatVectorL2.class,
                 "../data/sift/queryset-sift-1000.data.txt",
                 1000, 30, "../data/sift/sift-1M.data.txt", 1000000,
                 "src/main/java/bp/results/LaesaSift.csv");
+    }
+
+    public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaRandom", ObjectFloatVectorL2.class,
+                "../data/D20_query_objects_uniform_distribution.data", 1000, 30,
+                "../data/D20_data_objects_uniform_distribution.data",
+                100000, "src/main/java/bp/results/LaesaRandom.csv");
+    }
+
+    public static void restoreAndExecuteQueriesLaesaDecaf() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaDecaf", ObjectFloatVectorL2.class,
+                "../data/decaf/profi-neuralnet-1000-query.data.txt", 1000, 30,
+                "../data/decaf/profi-neuralnet-1M.data", 1000000,
+                "src/main/java/bp/results/LaesaDecaf.csv");
+    }
+
+    public static void restoreAndExecuteQueriesLaesaMpeg() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaMpeg", MetaObjectSAPIRWeightedDist2.class,
+                "../data/mpeg7/queryset-cophir-1000_sapir2.data.txt",
+                1000, 30, "../data/mpeg7/metaobject1M.data", 1000000,
+                "src/main/java/bp/results/LaesaMpeg.csv");
     }
 
     public static void prepareAndExecuteSeqScan() throws IOException {

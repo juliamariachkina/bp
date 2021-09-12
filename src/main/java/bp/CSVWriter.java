@@ -18,7 +18,7 @@ public class CSVWriter {
     }
 
     public void writeQueryResults(Map<String, List<RankedAbstractObject>> results,
-                                  Map<String, StatisticCounter> locatorToDistComp)
+                                  Map<String, Long> locatorToDistComp)
             throws IOException {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
         writeAnswer(writer, results, locatorToDistComp);
@@ -27,13 +27,13 @@ public class CSVWriter {
 
     private void writeAnswer(PrintWriter writer,
                              Map<String, List<RankedAbstractObject>> results,
-                             Map<String, StatisticCounter> locatorToDistComp) {
+                             Map<String, Long> locatorToDistComp) {
         for (Map.Entry<String, List<RankedAbstractObject>> locatorToKNN : results.entrySet()) {
             writer.println("IDquery;" + locatorToKNN.getKey());
             for (RankedAbstractObject neighbour : locatorToKNN.getValue()) {
                 writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI());
             }
-            writer.println("Number of distance computations:" + locatorToDistComp.get(locatorToKNN.getKey()).getValue());
+            writer.println("Number of distance computations:" + locatorToDistComp.get(locatorToKNN.getKey()));
         }
     }
 }

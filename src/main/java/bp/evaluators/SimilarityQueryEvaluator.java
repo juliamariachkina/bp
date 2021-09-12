@@ -63,24 +63,26 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
     }
 
     public void evaluateQueriesAndWriteResult(String filePathToResults) throws IOException {
-        Map<String, StatisticCounter> locatorToDistComp = new HashMap<>();
+        Map<String, Long> locatorToDistComp = new HashMap<>();
         Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp);
 
         CSVWriter writer = new CSVWriter(filePathToResults);
         writer.writeQueryResults(result, locatorToDistComp);
     }
 
-    public Map<String, List<RankedAbstractObject>> evaluateQueries(Map<String, StatisticCounter> locatorToDistComp) {
+    public Map<String, List<RankedAbstractObject>> evaluateQueries(Map<String, Long> locatorToDistComp) {
         Map<String, List<RankedAbstractObject>> result = new HashMap<>();
         try {
             for (LocalAbstractObject queryObject : queryObjects) {
+                LOG.log(Level.INFO, "Query object with uri: " + queryObject.getLocatorURI());
                 Statistics.resetStatistics();
                 KNNQueryOperation op = new KNNQueryOperation(queryObject, k, AnswerType.NODATA_OBJECTS);
                 op = algorithm.executeOperation(op);
 
                 result.put(queryObject.getLocatorURI(), new ArrayList<>());
                 op.getAnswer().forEachRemaining(result.get(queryObject.getLocatorURI())::add);
-                locatorToDistComp.put(queryObject.getLocatorURI(), StatisticCounter.getStatistics("DistanceComputations"));
+                locatorToDistComp.put(queryObject.getLocatorURI(), StatisticCounter.getStatistics("DistanceComputations").getValue());
+                LOG.log(Level.INFO, "Distance computations: " + StatisticCounter.getStatistics("DistanceComputations"));
             }
         } catch (NoSuchMethodException | AlgorithmMethodException e) {
             LOG.log(Level.WARNING, "Query evaluation ended with a failure: " + e.getMessage());

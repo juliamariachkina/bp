@@ -61,9 +61,9 @@ public class Main {
     }
 
     public static void createAndStoreLaesaDecaf() throws CapacityFullException, IOException, InstantiationException {
-        createAndStoreAlgorithm("../decaf/pivots_2560", ObjectFloatVectorL2.class,
-                DiskBlockBucket.class, 256, "../decaf/query_1000",
-                1000, 30, "../decaf/data_1M", 1000000,
+        createAndStoreAlgorithm("../data/decaf/pivots-random-2560.data.txt", ObjectFloatVectorL2.class,
+                DiskBlockBucket.class, 256, "../data/decaf/profi-neuralnet-1000-query.data.txt",
+                1000, 30, "../data/decaf/profi-neuralnet-1M.data.gz", 1000000,
                 "src/main/java/bp/storedAlgos/laesaDecaf");
     }
 

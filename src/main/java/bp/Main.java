@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        createAndStoreLaesaDecaf();
+        createAndStoreLaesaSift();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -48,9 +48,9 @@ public class Main {
 
     public static void createAndStoreLaesaSift() throws CapacityFullException, IOException, InstantiationException {
         createAndStoreAlgorithm("../sift/pivots_256", ObjectFloatVectorL2.class,
-                DiskBlockBucket.class, 256, "../sift/query_1000",
+                MemoryStorageBucket.class, 256, "../sift/query_1000",
                 1000, 30, "../sift/data_1M", 1000000,
-                "src/main/java/bp/storedAlgos/laesaSift");
+                "src/main/java/bp/storedAlgos/laesaSift2");
     }
 
     public static void createAndStoreLaesaRandom() throws CapacityFullException, IOException, InstantiationException {

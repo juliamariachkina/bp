@@ -37,7 +37,7 @@
                 <version>1.4.0</version>
                 <configuration>
                     <arguments>
-                        <argument>-Xmx10g</argument>
+                        <argument>-Xmx20g</argument>
                     </arguments>
                     <mainClass>bp.Main</mainClass>
                 </configuration>

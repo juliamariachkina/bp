@@ -7,7 +7,6 @@ import messif.algorithms.impl.ParallelSequentialScan;
 import messif.algorithms.impl.SequentialScan;
 import messif.buckets.CapacityFullException;
 import messif.buckets.LocalBucket;
-import messif.buckets.impl.DiskBlockBucket;
 import messif.buckets.impl.MemoryStorageBucket;
 import messif.objects.LocalAbstractObject;
 import messif.objects.impl.MetaObjectSAPIRWeightedDist2;
@@ -23,7 +22,7 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        createAndStoreLaesaSift();
+        createAndStoreLaesaDecaf();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -63,13 +62,13 @@ public class Main {
     public static void createAndStoreLaesaDecaf() throws CapacityFullException, IOException, InstantiationException {
         createAndStoreAlgorithm("../decaf/pivots_2560", ObjectFloatVectorL2.class,
                 MemoryStorageBucket.class, 256, "../decaf/query_1000",
-                1000, 30, "../decaf/data_1M", 1000000,
+                1000, 30, "../decaf/data_1M.gz", 1000000,
                 "src/main/java/bp/storedAlgos/laesaDecaf");
     }
 
     public static void createAndStoreLaesaMpeg() throws CapacityFullException, IOException, InstantiationException {
         createAndStoreAlgorithm("../mpeg/pivots_2560", MetaObjectSAPIRWeightedDist2.class,
-                DiskBlockBucket.class, 256, "../mpeg/query_1000",
+                MemoryStorageBucket.class, 256, "../mpeg/query_1000",
                 1000, 30, "../mpeg/data_1M", 1000000,
                 "src/main/java/bp/storedAlgos/laesaMpeg");
     }

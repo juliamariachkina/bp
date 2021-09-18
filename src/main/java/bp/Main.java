@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        createAndStoreLaesaDecaf();
+        restoreAndExecuteQueriesLaesaDecaf();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,

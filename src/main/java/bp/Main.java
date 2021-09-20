@@ -25,7 +25,7 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        System.setErr(new PrintStream(new FileOutputStream("bp/errorOutputs/laesaRandom.txt")));
+        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesaRandom.txt")));
 
         createAndStoreLaesaRandom();
     }

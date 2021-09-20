@@ -13,7 +13,10 @@ import messif.objects.impl.MetaObjectSAPIRWeightedDist2;
 import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +25,9 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        restoreAndExecuteQueriesLaesaDecaf();
+        System.setErr(new PrintStream(new FileOutputStream("bp/errorOutputs/laesaRandom.txt")));
+
+        createAndStoreLaesaRandom();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -53,9 +58,9 @@ public class Main {
     }
 
     public static void createAndStoreLaesaRandom() throws CapacityFullException, IOException, InstantiationException {
-        createAndStoreAlgorithm("../D20_pivot_objects_uniform_distribution.data", ObjectFloatVectorL2.class,
-                MemoryStorageBucket.class, 256, "../D20_query_objects_uniform_distribution.data",
-                1000, 30, "../D20_data_objects_uniform_distribution.data", 100000,
+        createAndStoreAlgorithm("../random/pivots_256", ObjectFloatVectorL2.class,
+                MemoryStorageBucket.class, 256, "../random/query_1000",
+                1000, 30, "../random/data_1M", 100000,
                 "src/main/java/bp/storedAlgos/laesaRandom");
     }
 
@@ -94,8 +99,8 @@ public class Main {
 
     public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaRandom", ObjectFloatVectorL2.class,
-                "../D20_query_objects_uniform_distribution.data", 1000, 30,
-                "../D20_data_objects_uniform_distribution.data",
+                "../random/query_1000", 1000, 30,
+                "../random/data_1M",
                 100000, "src/main/java/bp/results/LaesaRandom.csv");
     }
 

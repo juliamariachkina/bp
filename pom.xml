@@ -36,9 +36,6 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <arguments>
-                        <argument>-Xmx20g</argument>
-                    </arguments>
                     <mainClass>bp.Main</mainClass>
                 </configuration>
             </plugin>

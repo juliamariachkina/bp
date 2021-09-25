@@ -25,11 +25,10 @@ public class Main {
 
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
-        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesaRandom.txt")));
-
-        restoreAndExecuteQueriesLaesaSift();
-        restoreAndExecuteQueriesLaesaMpeg();
-        restoreAndExecuteQueriesLaesaDecaf();
+        createAndStoreLaesaSift();
+	restoreAndExecuteQueriesLaesaSift();
+        //restoreAndExecuteQueriesLaesaMpeg();
+        //restoreAndExecuteQueriesLaesaDecaf();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -56,7 +55,7 @@ public class Main {
         createAndStoreAlgorithm("../sift/pivots_256", ObjectFloatVectorL2.class,
                 MemoryStorageBucket.class, 256, "../sift/query_1000",
                 1000, 30, "../sift/data_1M", 1000000,
-                "src/main/java/bp/storedAlgos/laesaSift2");
+                "src/main/java/bp/storedAlgos/laesaSift");
     }
 
     public static void createAndStoreLaesaRandom() throws CapacityFullException, IOException, InstantiationException {
@@ -99,7 +98,7 @@ public class Main {
                 10, 30, "../sift/data_1M", 1000000,
                 "src/main/java/bp/results/LaesaSiftWithGroundTruth.csv",
                 "../sift/groundtruth_1M",
-                "INFO: ParallelSequentialScan processed: KNNQueryOperation <ObjectFloatVectorL2 (\\(\\w\\d+\\))");
+                "INFO: ParallelSequentialScan processed: KNNQueryOperation <ObjectFloatVectorL2 \\((\\w\\d+)\\).*");
     }
 
     public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
@@ -115,7 +114,7 @@ public class Main {
                 "../decaf/query_1000", 10, 30,
                 "../decaf/data_1M", 1000000,
                 "src/main/java/bp/results/LaesaDecafWithGroundTruth.csv", "../decaf/groundtruth_q1000",
-                "query=\\(\\d+\\)");
+                "query=(\\d+)");
     }
 
     public static void restoreAndExecuteQueriesLaesaMpeg() throws IOException, ClassNotFoundException {
@@ -123,7 +122,7 @@ public class Main {
                 "../mpeg/query_1000",
                 10, 30, "../mpeg/data_1M", 1000000,
                 "src/main/java/bp/results/LaesaMpegWithGroundTruth.csv", "../mpeg/groundtruth_q1000",
-                "INFO: Algorithm processed: KNNQueryOperation <MetaObjectSAPIRWeightedDist3 (\\(\\d+\\))");
+                "INFO: Algorithm processed: KNNQueryOperation <MetaObjectSAPIRWeightedDist3 \\((\\d+)\\).*");
     }
 
     public static void prepareAndExecuteSeqScan() throws IOException {

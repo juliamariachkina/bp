@@ -34,16 +34,16 @@ public class GroundTruthParser {
         String lastQueryUri = null;
         String line = reader.readLine();
         while (line != null) {
-            LOG.log(Level.INFO, line);
+            //LOG.log(Level.INFO, line);
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
             if (queryObjectUriMatcher.matches()) {
-                LOG.log(Level.WARNING, queryObjectUriMatcher.group(1));
+                //LOG.log(Level.WARNING, queryObjectUriMatcher.group(1));
                 lastQueryUri = queryObjectUriMatcher.group(1);
                 result.put(queryObjectUriMatcher.group(1), new HashSet<>());
             }
             dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
             if (dataObjectUriMatcher.matches()) {
-                LOG.log(Level.WARNING, dataObjectUriMatcher.group());
+                //LOG.log(Level.WARNING, dataObjectUriMatcher.group());
                 List<String> neighbours = Arrays.stream(dataObjectUriMatcher.group()
                         .replaceAll(" ?\\d+\\.\\d+: ", "")
                         .split(","))

@@ -27,7 +27,9 @@ public class Main {
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException {
         System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesaRandom.txt")));
 
-        createAndStoreLaesaRandom();
+        restoreAndExecuteQueriesLaesaSift();
+        restoreAndExecuteQueriesLaesaMpeg();
+        restoreAndExecuteQueriesLaesaDecaf();
     }
 
     public static <T extends LocalAbstractObject> void createAndStoreAlgorithm(String pivotFilePath, Class<T> objectClass,
@@ -81,41 +83,47 @@ public class Main {
     public static <T extends LocalAbstractObject> void restoreAndExecuteQueries(String algoFilePath, Class<T> objectClass,
                                                                                 String queryFilePath, int queryCount,
                                                                                 int k, String dataFilePath,
-                                                                                int dataObjectsCount, String filePathToStoreResults)
+                                                                                int dataObjectsCount, String filePathToStoreResults,
+                                                                                String groundTruthPath, String queryPattern)
             throws IOException, ClassNotFoundException {
         SimilarityQueryEvaluator<T> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
                 Algorithm.restoreFromFile(algoFilePath), queryFilePath, queryCount,
                 k, dataFilePath, dataObjectsCount, objectClass);
 
-        similarityQueryEvaluator.evaluateQueriesAndWriteResult(filePathToStoreResults);
+        similarityQueryEvaluator.evaluateQueriesAndWriteResult(filePathToStoreResults, groundTruthPath, queryPattern);
     }
 
     public static void restoreAndExecuteQueriesLaesaSift() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaSift", ObjectFloatVectorL2.class,
                 "../sift/query_1000",
-                1000, 30, "../sift/data_1M", 1000000,
-                "src/main/java/bp/results/LaesaSift.csv");
+                10, 30, "../sift/data_1M", 1000000,
+                "src/main/java/bp/results/LaesaSiftWithGroundTruth.csv",
+                "../sift/groundtruth_1M",
+                "INFO: ParallelSequentialScan processed: KNNQueryOperation <ObjectFloatVectorL2 (\\(\\w\\d+\\))");
     }
 
     public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaRandom", ObjectFloatVectorL2.class,
                 "../random/query_1000", 1000, 30,
                 "../random/data_1M",
-                100000, "src/main/java/bp/results/LaesaRandom.csv");
+                100000, "src/main/java/bp/results/LaesaRandom.csv",
+                "add filepath", "add pattern");
     }
 
     public static void restoreAndExecuteQueriesLaesaDecaf() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaDecaf", ObjectFloatVectorL2.class,
-                "../decaf/query_1000", 1000, 30,
+                "../decaf/query_1000", 10, 30,
                 "../decaf/data_1M", 1000000,
-                "src/main/java/bp/results/LaesaDecaf.csv");
+                "src/main/java/bp/results/LaesaDecafWithGroundTruth.csv", "../decaf/groundtruth_q1000",
+                "query=\\(\\d+\\)");
     }
 
     public static void restoreAndExecuteQueriesLaesaMpeg() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries("src/main/java/bp/storedAlgos/laesaMpeg", MetaObjectSAPIRWeightedDist2.class,
                 "../mpeg/query_1000",
-                1000, 30, "../mpeg/data_1M", 1000000,
-                "src/main/java/bp/results/LaesaMpeg.csv");
+                10, 30, "../mpeg/data_1M", 1000000,
+                "src/main/java/bp/results/LaesaMpegWithGroundTruth.csv", "../mpeg/groundtruth_q1000",
+                "INFO: Algorithm processed: KNNQueryOperation <MetaObjectSAPIRWeightedDist3 (\\(\\d+\\))");
     }
 
     public static void prepareAndExecuteSeqScan() throws IOException {
@@ -126,6 +134,7 @@ public class Main {
                 100000, ObjectFloatVectorL2.class);
         similarityQueryEvaluator.insertData();
 
-        similarityQueryEvaluator.evaluateQueriesAndWriteResult("src/main/java/bp/results/SeqScan.csv");
+        similarityQueryEvaluator.evaluateQueriesAndWriteResult("src/main/java/bp/results/SeqScan.csv",
+                "add filepath", "add pattern");
     }
 }

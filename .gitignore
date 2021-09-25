@@ -1,3 +1,4 @@
 target/
 *.class
-storedAlgos/
+src/main/java/bp/storedAlgos/
+src/main/java/bp/errorOutputs/

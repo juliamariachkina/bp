@@ -62,11 +62,12 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
         }
     }
 
-    public void evaluateQueriesAndWriteResult(String filePathToResults) throws IOException {
+    public void evaluateQueriesAndWriteResult(String filePathToResults, String groundTruthPath, String queryPattern)
+            throws IOException {
         Map<String, Long> locatorToDistComp = new HashMap<>();
         Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp);
 
-        CSVWriter writer = new CSVWriter(filePathToResults);
+        CSVWriter writer = new CSVWriter(filePathToResults, groundTruthPath, queryPattern);
         writer.writeQueryResults(result, locatorToDistComp);
     }
 

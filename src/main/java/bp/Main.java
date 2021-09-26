@@ -35,11 +35,11 @@ public class Main {
         LOG.log(Level.INFO, "Create and Store algorithm method starts");
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
         LOG.log(Level.INFO, "Pivot iterator created");
-        Algorithm aLgorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
+        Algorithm algorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
         LOG.log(Level.INFO, "Algorithm initialised");
 
         SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
-                aLgorithm, datasetData.queryFilePath, datasetData.queryCount, k,
+                algorithm, datasetData.queryFilePath, datasetData.queryCount, k,
                 datasetData.dataFilePath, datasetData.dataObjectsCount, datasetData.objectClass);
         similarityQueryEvaluator.insertData();
         LOG.log(Level.INFO, "Data objects inserted");

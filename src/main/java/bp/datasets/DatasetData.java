@@ -14,4 +14,21 @@ public abstract class DatasetData {
     public int dataObjectsCount;
     public String groundTruthPath;
     public String queryPattern;
+
+    public DatasetData(Class<? extends LocalAbstractObject> objectClass,
+                       Class<? extends LocalBucket> bucketClass,
+                       String pivotFilePath, int pivotCount, String queryFilePath,
+                       int queryCount, String dataFilePath, int dataObjectsCount,
+                       String groundTruthPath, String queryPattern) {
+        this.objectClass = objectClass;
+        this.bucketClass = bucketClass;
+        this.pivotFilePath = pivotFilePath;
+        this.pivotCount = pivotCount;
+        this.queryFilePath = queryFilePath;
+        this.queryCount = queryCount;
+        this.dataFilePath = dataFilePath;
+        this.dataObjectsCount = dataObjectsCount;
+        this.groundTruthPath = groundTruthPath;
+        this.queryPattern = queryPattern;
+    }
 }

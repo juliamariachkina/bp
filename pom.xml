@@ -27,6 +27,11 @@
             <artifactId>messif.private</artifactId>
             <version>2.1.7</version>
         </dependency>
+        <dependency>
+            <groupId>mtree</groupId>
+            <artifactId>mtree</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

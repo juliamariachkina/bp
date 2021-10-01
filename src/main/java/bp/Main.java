@@ -31,6 +31,7 @@ public class Main {
 //        restoreAndExecuteQueriesLaesaMpeg();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
 //        restoreAndExecuteQueriesLaesaSift();
+//  	  createAndStoreLaesaRandom();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
 //        restoreAndExecuteQueriesLaesaRandom();
 //
@@ -59,7 +60,7 @@ public class Main {
         if (algorithmClass.equals(SequentialScan.class))
             algorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
         else {
-            int internalNodeCapacity = 50 * pivotIter.getCurrentObject().getSize();
+            int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();;
             algorithm = new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount,
                     pivotIter, datasetData.pivotCount, datasetData.pivotCount);
         }

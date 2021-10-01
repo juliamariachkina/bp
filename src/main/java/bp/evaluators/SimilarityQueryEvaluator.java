@@ -14,6 +14,7 @@ import messif.statistics.Statistics;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
                     Utility.getObjectsIterator(dataFilePath, dataClass),
                     dataObjectsCount));
         } catch (AlgorithmMethodException | NoSuchMethodException e) {
-            LOG.log(Level.SEVERE, "Reading objects ended with a failure: " + e.getMessage());
+            LOG.log(Level.SEVERE, "Reading objects ended with a failure: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -67,6 +68,7 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
         Map<String, Long> locatorToDistComp = new HashMap<>();
         Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp);
 
+	System.setErr(System.err);
         CSVWriter writer = new CSVWriter(filePathToResults, groundTruthPath, queryPattern);
         writer.writeQueryResults(result, locatorToDistComp);
     }

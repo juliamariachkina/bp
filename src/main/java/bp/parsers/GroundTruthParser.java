@@ -1,11 +1,9 @@
 package bp.parsers;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,19 +32,17 @@ public class GroundTruthParser {
         String lastQueryUri = null;
         String line = reader.readLine();
         while (line != null) {
-            //LOG.log(Level.INFO, line);
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
             if (queryObjectUriMatcher.matches()) {
-                //LOG.log(Level.WARNING, queryObjectUriMatcher.group(1));
                 lastQueryUri = queryObjectUriMatcher.group(1);
                 result.put(queryObjectUriMatcher.group(1), new HashSet<>());
             }
             dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
             if (dataObjectUriMatcher.matches()) {
-                //LOG.log(Level.WARNING, dataObjectUriMatcher.group());
                 List<String> neighbours = Arrays.stream(dataObjectUriMatcher.group()
                         .replaceAll(" ?\\d+\\.\\d+: ", "")
                         .split(","))
+                        .limit(30)
                         .collect(Collectors.toList());
                 result.get(lastQueryUri).addAll(neighbours);
             }

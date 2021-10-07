@@ -39,9 +39,13 @@ public class CSVWriter {
             writer.println("IDquery;" + locatorToKNN.getKey());
 
             for (RankedAbstractObject neighbour : locatorToKNN.getValue()) {
-                String isCorrect = queryUriToObjectUris.get(locatorToKNN.getKey())
-                        .contains(neighbour.getObject().getLocatorURI()) ? "ok" : "nok";
-                writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI() + ";" + isCorrect);
+                Set<String> objectUris = queryUriToObjectUris.get(locatorToKNN.getKey());
+                String isCorrect = objectUris == null ?
+                        "" :
+                        objectUris.contains(neighbour.getObject().getLocatorURI()) ?
+                                "ok" :
+                                "nok";
+		writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI() + ";" + isCorrect);
             }
 
             writer.println("Number of distance computations:" + locatorToDistComp.get(locatorToKNN.getKey()));

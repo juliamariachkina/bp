@@ -25,13 +25,12 @@ public class Main {
     public static void main(String args[])
             throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException, AlgorithmMethodException {
 
-        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Decaf.txt")));
-        restoreAndExecuteQueriesLaesaDecaf();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Mpeg.txt")));
-//        restoreAndExecuteQueriesLaesaMpeg();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
-//        restoreAndExecuteQueriesLaesaSift();
-//  	  createAndStoreLaesaRandom();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Decaf.txt")));
+//        restoreAndExecuteQueriesLaesaDecaf();
+//	  System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Mpeg.txt")));
+//          restoreAndExecuteQueriesLaesaMpeg();
+//	  System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
+//          restoreAndExecuteQueriesLaesaSift();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
 //        restoreAndExecuteQueriesLaesaRandom();
 //
@@ -41,8 +40,8 @@ public class Main {
 //        createAndStoreMTreeDecaf();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt")));
 //        restoreAndExecuteQueriesMTreeRandom();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt")));
-//        restoreAndExecuteQueriesMTreeSift();
+        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt")));
+        restoreAndExecuteQueriesMTreeSift();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
 //        restoreAndExecuteQueriesMTreeMpeg();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Decaf.txt")));

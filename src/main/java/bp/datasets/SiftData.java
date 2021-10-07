@@ -7,7 +7,7 @@ public class SiftData extends DatasetData {
 
     public SiftData() {
         super(ObjectFloatVectorL2.class, MemoryStorageBucket.class, "../sift/pivots_256", 256,
-                "../sift/query_1000", 10, "../sift/data_1M", 1000000,
+                "../sift/query_1000", 1000, "../sift/data_1M", 1000000,
                 "../sift/groundtruth_1M",
                 "INFO: ParallelSequentialScan processed: KNNQueryOperation <ObjectFloatVectorL2 \\((\\w\\d+)\\).*");
     }

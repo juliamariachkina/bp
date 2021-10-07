@@ -87,8 +87,8 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
                 locatorToDistComp.put(queryObject.getLocatorURI(), StatisticCounter.getStatistics("DistanceComputations").getValue());
                 LOG.log(Level.INFO, "Distance computations: " + StatisticCounter.getStatistics("DistanceComputations"));
             }
-        } catch (NoSuchMethodException | AlgorithmMethodException e) {
-            LOG.log(Level.WARNING, "Query evaluation ended with a failure: " + e.getMessage());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "Query evaluation ended with a failure: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         return result;
     }

@@ -3,7 +3,10 @@ package bp;
 import bp.parsers.GroundTruthParser;
 import messif.objects.util.RankedAbstractObject;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +34,19 @@ public class CSVWriter {
         writer.flush();
     }
 
+    public static void writePivotCoefs(Map<String, Float> pivotURItoCoef, String filePath) throws IOException {
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
+        writePivotCoefs(writer, pivotURItoCoef);
+        writer.flush();
+    }
+
+    private static void writePivotCoefs(PrintWriter writer, Map<String, Float> pivotURItoCoef) {
+        writer.println("Pivot URI;coef");
+        for (Map.Entry<String, Float> pivotURIToCoefEntry : pivotURItoCoef.entrySet()) {
+            writer.println(pivotURIToCoefEntry.getKey() + ";" + pivotURIToCoefEntry.getValue());
+        }
+    }
+
     private void writeAnswer(PrintWriter writer,
                              Map<String, List<RankedAbstractObject>> results,
                              Map<String, Long> locatorToDistComp,
@@ -45,9 +61,8 @@ public class CSVWriter {
                         objectUris.contains(neighbour.getObject().getLocatorURI()) ?
                                 "ok" :
                                 "nok";
-		writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI() + ";" + isCorrect);
+                writer.println(neighbour.getDistance() + ";" + neighbour.getObject().getLocatorURI() + ";" + isCorrect);
             }
-
             writer.println("Number of distance computations:" + locatorToDistComp.get(locatorToKNN.getKey()));
         }
     }

@@ -3,6 +3,7 @@ package bp;
 import bp.datasets.*;
 import bp.evaluators.SimilarityQueryEvaluator;
 import bp.utils.Utility;
+import bp.utils.filteringCoefs.PivotCoefs;
 import messif.algorithms.Algorithm;
 import messif.algorithms.AlgorithmMethodException;
 import messif.algorithms.impl.ParallelSequentialScan;
@@ -13,39 +14,18 @@ import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
 import mtree.MTree;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
-    public static void main(String args[])
-            throws IOException, CapacityFullException, InstantiationException, ClassNotFoundException, AlgorithmMethodException {
-
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Decaf.txt")));
-//        restoreAndExecuteQueriesLaesaDecaf();
-//	  System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Mpeg.txt")));
-//          restoreAndExecuteQueriesLaesaMpeg();
-//	  System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
-//          restoreAndExecuteQueriesLaesaSift();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
-//        restoreAndExecuteQueriesLaesaRandom();
-//
-//        createAndStoreMTreeRandom();
-//        createAndStoreMTreeSift();
-//        createAndStoreMTreeMpeg();
-//        createAndStoreMTreeDecaf();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt")));
-//        restoreAndExecuteQueriesMTreeRandom();
-        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt")));
-        restoreAndExecuteQueriesMTreeSift();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
-//        restoreAndExecuteQueriesMTreeMpeg();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Decaf.txt")));
-//        restoreAndExecuteQueriesMTreeDecaf();
+    public static void main(String args[]) throws IOException {
+        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
+//        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
+//        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
+//        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,
@@ -59,7 +39,7 @@ public class Main {
         if (algorithmClass.equals(SequentialScan.class))
             algorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
         else {
-            int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();;
+            int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();
             algorithm = new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount,
                     pivotIter, datasetData.pivotCount, datasetData.pivotCount);
         }

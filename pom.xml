@@ -42,6 +42,11 @@
             <artifactId>mindex</artifactId>
             <version>2.9.3</version>
         </dependency>
+        <dependency>
+            <groupId>trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -7,17 +7,15 @@ import messif.algorithms.AlgorithmMethodException;
 import messif.objects.LocalAbstractObject;
 import messif.objects.util.RankedAbstractObject;
 import messif.operations.AnswerType;
+import messif.operations.Approximate;
 import messif.operations.data.BulkInsertOperation;
+import messif.operations.query.ApproxKNNQueryOperation;
 import messif.operations.query.KNNQueryOperation;
 import messif.statistics.StatisticCounter;
 import messif.statistics.Statistics;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,23 +61,25 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
         }
     }
 
-    public void evaluateQueriesAndWriteResult(String filePathToResults, String groundTruthPath, String queryPattern)
+    public void evaluateQueriesAndWriteResult(String filePathToResults, String groundTruthPath, String queryPattern, boolean isApproxOp)
             throws IOException {
         Map<String, Long> locatorToDistComp = new HashMap<>();
-        Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp);
+        Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp, isApproxOp);
 
-	System.setErr(System.err);
         CSVWriter writer = new CSVWriter(filePathToResults, groundTruthPath, queryPattern);
         writer.writeQueryResults(result, locatorToDistComp);
     }
 
-    public Map<String, List<RankedAbstractObject>> evaluateQueries(Map<String, Long> locatorToDistComp) {
+    public Map<String, List<RankedAbstractObject>> evaluateQueries(Map<String, Long> locatorToDistComp, boolean isApproxOp) {
         Map<String, List<RankedAbstractObject>> result = new HashMap<>();
         try {
             for (LocalAbstractObject queryObject : queryObjects) {
                 LOG.log(Level.INFO, "Query object with uri: " + queryObject.getLocatorURI());
                 Statistics.resetStatistics();
-                KNNQueryOperation op = new KNNQueryOperation(queryObject, k, AnswerType.NODATA_OBJECTS);
+                KNNQueryOperation op = isApproxOp ?
+                        new ApproxKNNQueryOperation(queryObject, k, AnswerType.NODATA_OBJECTS, 50000,
+                                Approximate.LocalSearchType.ABS_OBJ_COUNT, -1) :
+                        new KNNQueryOperation(queryObject, k, AnswerType.NODATA_OBJECTS);
                 op = algorithm.executeOperation(op);
 
                 result.put(queryObject.getLocatorURI(), new ArrayList<>());

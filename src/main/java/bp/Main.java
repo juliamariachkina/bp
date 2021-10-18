@@ -3,7 +3,6 @@ package bp;
 import bp.datasets.*;
 import bp.evaluators.SimilarityQueryEvaluator;
 import bp.utils.Utility;
-import bp.utils.filteringCoefs.PivotCoefs;
 import messif.algorithms.Algorithm;
 import messif.algorithms.AlgorithmMethodException;
 import messif.algorithms.impl.ParallelSequentialScan;
@@ -12,17 +11,20 @@ import messif.buckets.CapacityFullException;
 import messif.objects.LocalAbstractObject;
 import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
+import mindex.algorithms.MIndexAlgorithm;
 import mtree.MTree;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
-    public static void main(String args[]) throws IOException {
-        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
+    public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException {
+        createAndStoreMIndexRandom();
+//        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
 //        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
 //        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
 //        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
@@ -39,9 +41,13 @@ public class Main {
         if (algorithmClass.equals(SequentialScan.class))
             algorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
         else {
-            int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();
-            algorithm = new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount,
-                    pivotIter, datasetData.pivotCount, datasetData.pivotCount);
+            if (algorithmClass.equals(MIndexAlgorithm.class))
+                algorithm = createMIndex(datasetData);
+            else {
+                int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();
+                algorithm = new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount,
+                        pivotIter, datasetData.pivotCount, datasetData.pivotCount);
+            }
         }
         LOG.log(Level.INFO, "Algorithm initialised");
 
@@ -53,6 +59,34 @@ public class Main {
 
         similarityQueryEvaluator.storeToFile(filePathToStoreAlgo);
         LOG.log(Level.INFO, "Algorithm stored to a file");
+    }
+
+    private static MIndexAlgorithm createMIndex(DatasetData datasetData) throws AlgorithmMethodException, InstantiationException {
+        Properties props = new Properties();
+        props.put("mindex.object_class", datasetData.objectClass.getName());
+        props.put("mindex.pivot.number", Integer.toString(datasetData.pivotCount));
+        props.put("mindex.minlevel", "1");
+        props.put("mindex.maxlevel", "8");
+        props.put("mindex.ppcalculator.threads", "1");
+        props.put("mindex.use_existing_pivot_permutation", "true");
+        props.put("mindex.use_pivot_filtering", "false");
+        props.put("mindex.check_duplicate_dc", "false");
+        props.put("mindex.max_object_number", "0");
+        props.put("mindex.bucket.capacity", "2048");
+        props.put("mindex.bucket.min_occupation", "0");
+        props.put("mindex.bucket.occupation_as_bytes", "false");
+        props.put("mindex.bucket.agile_split", "false");
+        props.put("mindex.bucket.class", datasetData.bucketClass.getName());
+        props.put("mindex.precise.search", "false");
+        props.put("mindex.approximate.force_default", "false");
+        props.put("mindex.approximate.type", "ABS_OBJ_COUNT");
+        props.put("mindex.approximate.process_whole_multi_bucket", "true");
+        props.put("mindex.approximate.check_key_interval", "false");
+        props.put("mindex.remove_duplicates", "false");
+        props.put("mindex.overfilled.bucket.special", "false");
+        props.put("mindex.pivot.file", datasetData.pivotFilePath);
+
+        return new MIndexAlgorithm(props, "mindex.");
     }
 
     /*------------------------------------------------LAESA---------------------------------------------------------*/
@@ -91,61 +125,104 @@ public class Main {
         createAndStoreAlgorithm(new MpegData(), MTree.class, 30, "src/main/java/bp/storedAlgos/mtree/Mpeg");
     }
 
+    /*------------------------------------------------M-index--------------------------------------------------------*/
+
+    public static void createAndStoreMIndexSift() throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new SiftData(), MIndexAlgorithm.class, 30, "src/main/java/bp/storedAlgos/mindex/Sift");
+    }
+
+    public static void createAndStoreMIndexRandom() throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new RandomData(), MIndexAlgorithm.class, 30, "src/main/java/bp/storedAlgos/mindex/Random");
+    }
+
+    public static void createAndStoreMIndexDecaf() throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new DecafData(), MIndexAlgorithm.class, 30, "src/main/java/bp/storedAlgos/mindex/Decaf");
+    }
+
+    public static void createAndStoreMIndexMpeg() throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new MpegData(), MIndexAlgorithm.class, 30, "src/main/java/bp/storedAlgos/mindex/Mpeg");
+    }
+
     public static <T extends LocalAbstractObject> void restoreAndExecuteQueries(DatasetData datasetData, int k,
                                                                                 String algoFilePath,
-                                                                                String filePathToStoreResults)
+                                                                                String filePathToStoreResults,
+                                                                                boolean isApproxOp)
             throws IOException, ClassNotFoundException {
         SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
                 Algorithm.restoreFromFile(algoFilePath), datasetData.queryFilePath, datasetData.queryCount,
                 k, datasetData.dataFilePath, datasetData.dataObjectsCount, datasetData.objectClass);
 
         similarityQueryEvaluator.evaluateQueriesAndWriteResult(filePathToStoreResults, datasetData.groundTruthPath,
-                datasetData.queryPattern);
+                datasetData.queryPattern, isApproxOp);
     }
 
     /*------------------------------------------------LAESA---------------------------------------------------------*/
 
     public static void restoreAndExecuteQueriesLaesaSift() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/laesa/Sift",
-                "src/main/java/bp/results/laesa/LaesaSift.csv");
+                "src/main/java/bp/results/laesa/LaesaSift.csv", false);
     }
 
     public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/laesa/Random",
-                "src/main/java/bp/results/laesa/LaesaRandom.csv");
+                "src/main/java/bp/results/laesa/LaesaRandom.csv", false);
     }
 
     public static void restoreAndExecuteQueriesLaesaDecaf() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new DecafData(), 30, "src/main/java/bp/storedAlgos/laesa/Decaf",
-                "src/main/java/bp/results/laesa/LaesaDecaf.csv");
+                "src/main/java/bp/results/laesa/LaesaDecaf.csv", false);
     }
 
     public static void restoreAndExecuteQueriesLaesaMpeg() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new MpegData(), 30, "src/main/java/bp/storedAlgos/laesa/Mpeg",
-                "src/main/java/bp/results/laesa/LaesaMpeg.csv");
+                "src/main/java/bp/results/laesa/LaesaMpeg.csv", false);
     }
 
     /*------------------------------------------------M-tree---------------------------------------------------------*/
 
     public static void restoreAndExecuteQueriesMTreeSift() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/mtree/Sift",
-                "src/main/java/bp/results/mtree/MtreeSift.csv");
+                "src/main/java/bp/results/mtree/MtreeSift.csv", false);
     }
 
     public static void restoreAndExecuteQueriesMTreeRandom() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/mtree/Random",
-                "src/main/java/bp/results/mtree/MtreeRandom.csv");
+                "src/main/java/bp/results/mtree/MtreeRandom.csv", false);
     }
 
     public static void restoreAndExecuteQueriesMTreeDecaf() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new DecafData(), 30, "src/main/java/bp/storedAlgos/mtree/Decaf",
-                "src/main/java/bp/results/mtree/MtreeDecaf.csv");
+                "src/main/java/bp/results/mtree/MtreeDecaf.csv", false);
     }
 
     public static void restoreAndExecuteQueriesMTreeMpeg() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new MpegData(), 30, "src/main/java/bp/storedAlgos/mtree/Mpeg",
-                "src/main/java/bp/results/mtree/MtreeMpeg.csv");
+                "src/main/java/bp/results/mtree/MtreeMpeg.csv", false);
     }
+
+    /*------------------------------------------------M-index---------------------------------------------------------*/
+
+    public static void restoreAndExecuteQueriesMIndexSift() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/mindex/Sift",
+                "src/main/java/bp/results/mindex/MIndexSift.csv", false);
+    }
+
+    public static void restoreAndExecuteQueriesMIndexRandom() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/mindex/Random",
+                "src/main/java/bp/results/mindex/MIndexRandom.csv", false);
+    }
+
+    public static void restoreAndExecuteQueriesMIndexDecaf() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new DecafData(), 30, "src/main/java/bp/storedAlgos/mindex/Decaf",
+                "src/main/java/bp/results/mindex/MIndexDecaf.csv", false);
+    }
+
+    public static void restoreAndExecuteQueriesMIndexMpeg() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new MpegData(), 30, "src/main/java/bp/storedAlgos/mindex/Mpeg",
+                "src/main/java/bp/results/mindex/MIndexMpeg.csv", false);
+    }
+
+    /*--------------------------------------------Sequential-scan------------------------------------------------------*/
 
     public static void prepareAndExecuteSeqScan() throws IOException {
         SimilarityQueryEvaluator<ObjectFloatVectorL2> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
@@ -156,6 +233,6 @@ public class Main {
         similarityQueryEvaluator.insertData();
 
         similarityQueryEvaluator.evaluateQueriesAndWriteResult("src/main/java/bp/results/SeqScan.csv",
-                "add filepath", "add pattern");
+                "add filepath", "add pattern", false);
     }
 }

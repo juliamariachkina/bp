@@ -81,15 +81,16 @@ public class PivotCoefs {
                 datasetData.pivotFilePath, datasetData.objectClass, datasetData.pivotCount);
         AbstractObjectIterator<? extends LocalAbstractObject> objectIter = Utility.getObjectsIterator(
                 datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
-        AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(1356, true);
-        objects.removeAll(pivots); // To avoid having pivot as an object
+        AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(11256, true);
+        pivots.forEach(pivot -> objects.removeIf(object -> object.getLocatorURI().equals(pivot.getLocatorURI()))); // To avoid having pivot as an object
         if (objects.size() == 11256)
             throw new IllegalArgumentException("No pivots were removed from objects");
-        List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(100, true);
-        objects.removeAll(queries); // To avoid having query as an object
-        if (objects.size() > 11000)
+        List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
+        int prevSize = objects.size();
+        queries.forEach(query -> objects.removeIf(object -> object.getLocatorURI().equals(query.getLocatorURI()))); // To avoid having query as an object
+        if (objects.size() > (prevSize - 1000))
             throw new IllegalArgumentException("No queries were removed from objects");
-        List<? extends LocalAbstractObject> objectsList = objects.stream().limit(1000).collect(Collectors.toList());
+        List<? extends LocalAbstractObject> objectsList = objects.stream().limit(10000).collect(Collectors.toList());
 
 
         Map<String, Map<String, Float>> objectURItoMapQueryURItoDistance = computeSmallestDistances(objectsList, queries);

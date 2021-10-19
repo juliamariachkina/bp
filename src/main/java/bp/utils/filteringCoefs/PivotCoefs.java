@@ -79,17 +79,21 @@ public class PivotCoefs {
     public void computePivotCoefs(String filePath) throws IOException {
         List<? extends LocalAbstractObject> pivots = Utility.getObjectsList(
                 datasetData.pivotFilePath, datasetData.objectClass, datasetData.pivotCount);
-        AbstractObjectIterator<LocalAbstractObject> objectIter = Utility.getObjectsIterator(
+        AbstractObjectIterator<? extends LocalAbstractObject> objectIter = Utility.getObjectsIterator(
                 datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
-        AbstractObjectList<LocalAbstractObject> objects = objectIter.getRandomObjects(11256, true);
+        AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(1356, true);
         objects.removeAll(pivots); // To avoid having pivot as an object
-        List<LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
+        if (objects.size() == 11256)
+            throw new IllegalArgumentException("No pivots were removed from objects");
+        List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(100, true);
         objects.removeAll(queries); // To avoid having query as an object
-        List<LocalAbstractObject> objectsList = objects.stream().limit(10000).collect(Collectors.toList());
+        if (objects.size() > 11000)
+            throw new IllegalArgumentException("No queries were removed from objects");
+        List<? extends LocalAbstractObject> objectsList = objects.stream().limit(1000).collect(Collectors.toList());
 
 
         Map<String, Map<String, Float>> objectURItoMapQueryURItoDistance = computeSmallestDistances(objectsList, queries);
-        List<LocalAbstractObject> filteredObjects = objectsList.stream()
+        List<? extends LocalAbstractObject> filteredObjects = objectsList.stream()
                 .filter(object -> objectURItoMapQueryURItoDistance.containsKey(object.getLocatorURI()))
                 .collect(Collectors.toList());
         Set<String> filteredQueriesURIs = objectURItoMapQueryURItoDistance.values().stream()
@@ -97,7 +101,7 @@ public class PivotCoefs {
                     a.addAll(b);
                     return a;
                 });
-        List<LocalAbstractObject> filteredQueries = queries.stream()
+        List<? extends LocalAbstractObject> filteredQueries = queries.stream()
                 .filter(query -> filteredQueriesURIs.contains(query.getLocatorURI()))
                 .collect(Collectors.toList());
 

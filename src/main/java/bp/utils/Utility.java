@@ -4,7 +4,6 @@ import messif.objects.LocalAbstractObject;
 import messif.objects.util.AbstractObjectList;
 import messif.objects.util.StreamGenericAbstractObjectIterator;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -17,9 +16,9 @@ public class Utility {
 
     private static final Logger LOG = Logger.getLogger(Utility.class.getName());
 
-    public static <T extends LocalAbstractObject, S extends T, I extends Iterator<T>> I getObjectsIterator(String filePath, Class<S> className) {
+    public static <T extends LocalAbstractObject, S extends T> StreamGenericAbstractObjectIterator<T> getObjectsIterator(String filePath, Class<S> className) {
         try {
-            return (I) new StreamGenericAbstractObjectIterator<T>(className, filePath);
+            return new StreamGenericAbstractObjectIterator<>(className, filePath);
         } catch (Exception e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return null;

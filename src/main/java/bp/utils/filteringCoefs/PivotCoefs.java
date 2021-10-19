@@ -77,17 +77,19 @@ public class PivotCoefs {
     }
 
     public void computePivotCoefs(String filePath) throws IOException {
-        AbstractObjectIterator<LocalAbstractObject> objectIter = Utility.getObjectsIterator(
-                datasetData.dataFilePath, datasetData.objectClass);
-        AbstractObjectList<LocalAbstractObject> objects = objectIter.getRandomObjects(110, true);
-        List<LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(10, true);
-        objects.removeAll(queries);
-
         List<? extends LocalAbstractObject> pivots = Utility.getObjectsList(
                 datasetData.pivotFilePath, datasetData.objectClass, datasetData.pivotCount);
+        AbstractObjectIterator<LocalAbstractObject> objectIter = Utility.getObjectsIterator(
+                datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
+        AbstractObjectList<LocalAbstractObject> objects = objectIter.getRandomObjects(11256, true);
+        objects.removeAll(pivots); // To avoid having pivot as an object
+        List<LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
+        objects.removeAll(queries); // To avoid having query as an object
+        List<LocalAbstractObject> objectsList = objects.stream().limit(10000).collect(Collectors.toList());
 
-        Map<String, Map<String, Float>> objectURItoMapQueryURItoDistance = computeSmallestDistances(objects, queries);
-        List<LocalAbstractObject> filteredObjects = objects.stream()
+
+        Map<String, Map<String, Float>> objectURItoMapQueryURItoDistance = computeSmallestDistances(objectsList, queries);
+        List<LocalAbstractObject> filteredObjects = objectsList.stream()
                 .filter(object -> objectURItoMapQueryURItoDistance.containsKey(object.getLocatorURI()))
                 .collect(Collectors.toList());
         Set<String> filteredQueriesURIs = objectURItoMapQueryURItoDistance.values().stream()
@@ -104,7 +106,7 @@ public class PivotCoefs {
 
         Map<String, Float> pivotURItoCoef = new HashMap<>();
         for (LocalAbstractObject pivot : pivots) {
-            Float coefForP = Float.MAX_VALUE;
+            float coefForP = Float.MAX_VALUE;
             for (Map.Entry<String, Map<String, Float>> objectURItoMapQueryURItoDistEntry : objectURItoMapQueryURItoDistance.entrySet()) {
                 for (Map.Entry<String, Float> queryURItoDist : objectURItoMapQueryURItoDistEntry.getValue().entrySet()) {
                     float objectToQueryDist = queryURItoDist.getValue();
@@ -113,6 +115,10 @@ public class PivotCoefs {
                     float queryToPivotDist = queryURItoMapPivotURItoDistance.get(queryURItoDist.getKey()).get(pivot.getLocatorURI());
                     if (objectToPivotDist == queryToPivotDist && objectToQueryDist == queryToPivotDist)
                         continue;
+                    if (objectURItoMapQueryURItoDistEntry.getKey().equals(pivot.getLocatorURI()) || queryURItoDist.getKey().equals(pivot.getLocatorURI()))
+                        throw new IllegalArgumentException(
+                                (objectURItoMapQueryURItoDistEntry.getKey().equals(pivot.getLocatorURI()) ? "Object" : "Query") +
+                                        " URI is the same as the pivot URI for " + pivot.getLocatorURI());
                     float a = Math.min(Math.min(objectToPivotDist, objectToQueryDist), queryToPivotDist);
                     float b = Math.max(Math.max(objectToPivotDist, objectToQueryDist), queryToPivotDist);
                     float c = objectToPivotDist + objectToQueryDist + queryToPivotDist - a - b;

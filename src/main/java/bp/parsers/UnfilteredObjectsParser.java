@@ -30,13 +30,22 @@ public class UnfilteredObjectsParser {
         Matcher dataObjectUriMatcher;
 
         String line = reader.readLine();
+        String queryURI = "";
+        Set<String> computedDistancesTo = new HashSet<>();
         while (line != null) {
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
-            if (queryObjectUriMatcher.matches())
-                result.put(queryObjectUriMatcher.group(1), new HashSet<>());
+            if (queryObjectUriMatcher.matches()) {
+                if (!queryURI.equals("")) {
+                    result.put(queryURI, computedDistancesTo);
+                    computedDistancesTo = new HashSet<>();
+                }
+                queryURI = queryObjectUriMatcher.group(1);
+            }
             dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
             if (dataObjectUriMatcher.matches())
-                result.get(dataObjectUriMatcher.group(2)).add(dataObjectUriMatcher.group(1));
+                computedDistancesTo.add(dataObjectUriMatcher.group(1).equals(queryURI) ?
+                        dataObjectUriMatcher.group(2) :
+                        dataObjectUriMatcher.group(1));
             line = reader.readLine();
         }
         return result;

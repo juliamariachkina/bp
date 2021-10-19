@@ -1,5 +1,6 @@
 package bp;
 
+import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
 import messif.objects.util.RankedAbstractObject;
 
@@ -31,6 +32,20 @@ public class CSVWriter {
         Map<String, Set<String>> queryUriToObjectUris = new GroundTruthParser(groundTruthPath, queryPattern).parse();
 
         writeAnswer(writer, results, locatorToDistComp, queryUriToObjectUris);
+        writer.flush();
+    }
+
+    public static void writeSynergyEffectiveness(DatasetData datasetData, String filePath,
+                                                 Map<String, Set<String>> queryURIsToIntersectionObjectURIs) throws IOException {
+        Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
+        groundTruth.forEach((key, value) -> value.retainAll(queryURIsToIntersectionObjectURIs.get(key)));
+
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
+        for (Map.Entry<String, Set<String>> queryURItoFoundTrueNNs : groundTruth.entrySet()) {
+            writer.println("IDquery;" + queryURItoFoundTrueNNs.getKey());
+            queryURItoFoundTrueNNs.getValue().forEach(writer::println);
+            writer.println("Recall;" + queryURItoFoundTrueNNs.getValue().size());
+        }
         writer.flush();
     }
 

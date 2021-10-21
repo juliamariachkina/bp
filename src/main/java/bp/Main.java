@@ -15,7 +15,9 @@ import messif.objects.util.AbstractObjectIterator;
 import mindex.algorithms.MIndexAlgorithm;
 import mtree.MTree;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,22 +26,36 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
-//        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
-//        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
-//        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
-//        createAndStoreMIndexRandom();
-//        createAndStoreMIndexSift();
-//        createAndStoreMIndexMpeg();
-//        createAndStoreMIndexDecaf();
+        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
+        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
+        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
+        createAndStoreLaesaRandom();
+        createAndStoreLaesaMpeg();
+        createAndStoreLaesaDecaf();
+        createAndStoreMIndexRandom();
+        createAndStoreMIndexMpeg();
+        createAndStoreMIndexDecaf();
+
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
+//        restoreAndExecuteQueriesLaesaRandom();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Mpeg.txt")));
+//        restoreAndExecuteQueriesLaesaMpeg();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Decaf.txt")));
+//        restoreAndExecuteQueriesLaesaDecaf();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Random.txt")));
 //        restoreAndExecuteQueriesMIndexRandom();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt")));
-//        restoreAndExecuteQueriesMIndexSift();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Mpeg.txt")));
 //        restoreAndExecuteQueriesMIndexMpeg();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Decaf.txt")));
 //        restoreAndExecuteQueriesMIndexDecaf();
+
+//        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
+//        createAndStoreMIndexSift();
+//        createAndStoreLaesaSift();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
+//        restoreAndExecuteQueriesLaesaSift();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt")));
+//        restoreAndExecuteQueriesMIndexSift();
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,

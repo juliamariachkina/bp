@@ -83,13 +83,8 @@ public class PivotCoefs {
                 datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
         AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(11256, true);
         pivots.forEach(pivot -> objects.removeIf(object -> object.getLocatorURI().equals(pivot.getLocatorURI()))); // To avoid having pivot as an object
-        if (objects.size() == 11256)
-            throw new IllegalArgumentException("No pivots were removed from objects");
         List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
-        int prevSize = objects.size();
         queries.forEach(query -> objects.removeIf(object -> object.getLocatorURI().equals(query.getLocatorURI()))); // To avoid having query as an object
-        if (objects.size() > (prevSize - 1000))
-            throw new IllegalArgumentException("No queries were removed from objects");
         List<? extends LocalAbstractObject> objectsList = objects.stream().limit(10000).collect(Collectors.toList());
 
 
@@ -124,9 +119,11 @@ public class PivotCoefs {
                         throw new IllegalArgumentException(
                                 (objectURItoMapQueryURItoDistEntry.getKey().equals(pivot.getLocatorURI()) ? "Object" : "Query") +
                                         " URI is the same as the pivot URI for " + pivot.getLocatorURI());
-                    float a = Math.min(Math.min(objectToPivotDist, objectToQueryDist), queryToPivotDist);
-                    float b = Math.max(Math.max(objectToPivotDist, objectToQueryDist), queryToPivotDist);
-                    float c = objectToPivotDist + objectToQueryDist + queryToPivotDist - a - b;
+                    if (objectURItoMapQueryURItoDistEntry.getKey().equals(queryURItoDist.getKey()))
+                        throw new IllegalArgumentException("Object URI equals query URI for " + queryURItoDist.getKey());
+                    float a = Math.min(objectToPivotDist, queryToPivotDist);
+                    float b = Math.max(objectToPivotDist, queryToPivotDist);
+                    float c = objectToPivotDist;
                     float coef = c / (b - a);
                     coefForP = Math.min(coef, coefForP);
                 }

@@ -3,10 +3,7 @@ package bp.parsers;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +17,8 @@ public class UnfilteredObjectsParser {
         this.filePath = filePath;
     }
 
-    public Map<String, Set<String>> parse() throws IOException {
-        Map<String, Set<String>> result = new HashMap<>();
+    public Map<String, List<String>> parse() throws IOException {
+        Map<String, List<String>> result = new HashMap<>();
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
         Pattern queryObjectUriPattern = Pattern.compile("INFO: Query object with uri: (.*)");
@@ -31,13 +28,13 @@ public class UnfilteredObjectsParser {
 
         String line = reader.readLine();
         String queryURI = "";
-        Set<String> computedDistancesTo = new HashSet<>();
+        List<String> computedDistancesTo = new ArrayList<>();
         while (line != null) {
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
             if (queryObjectUriMatcher.matches()) {
                 if (!queryURI.equals("")) {
                     result.put(queryURI, computedDistancesTo);
-                    computedDistancesTo = new HashSet<>();
+                    computedDistancesTo = new ArrayList<>();
                 }
                 queryURI = queryObjectUriMatcher.group(1);
             }

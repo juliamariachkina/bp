@@ -35,15 +35,14 @@ public class CSVWriter {
         writer.flush();
     }
 
-    public static void writeSynergyEffectiveness(DatasetData datasetData, String filePath,
-                                                 Map<String, Set<String>> queryURIsToIntersectionObjectURIs) throws IOException {
-        Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
+    public static void writeSynergyEffectiveness(Map<String, Set<String>> groundTruth, String filePath,
+                                                 Map<String, List<String>> queryURIsToIntersectionObjectURIs) throws IOException {
         groundTruth.forEach((key, value) -> value.retainAll(queryURIsToIntersectionObjectURIs.get(key)));
 
         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
         for (Map.Entry<String, Set<String>> queryURItoFoundTrueNNs : groundTruth.entrySet()) {
             writer.println("IDquery;" + queryURItoFoundTrueNNs.getKey());
-            queryURItoFoundTrueNNs.getValue().forEach(writer::println);
+            queryURIsToIntersectionObjectURIs.get(queryURItoFoundTrueNNs.getKey()).forEach(writer::println);
             writer.println("Recall;" + queryURItoFoundTrueNNs.getValue().size());
         }
         writer.flush();

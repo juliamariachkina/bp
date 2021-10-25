@@ -26,15 +26,15 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
-        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
-        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
-        createAndStoreLaesaRandom();
-        createAndStoreLaesaMpeg();
-        createAndStoreLaesaDecaf();
-        createAndStoreMIndexRandom();
-        createAndStoreMIndexMpeg();
-        createAndStoreMIndexDecaf();
+//        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
+//        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
+//        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
+//        createAndStoreLaesaRandom();
+//        createAndStoreLaesaMpeg();
+//        createAndStoreLaesaDecaf();
+//        createAndStoreMIndexRandom();
+//        createAndStoreMIndexMpeg();
+//        createAndStoreMIndexDecaf();
 
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
 //        restoreAndExecuteQueriesLaesaRandom();
@@ -56,6 +56,20 @@ public class Main {
 //        restoreAndExecuteQueriesLaesaSift();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt")));
 //        restoreAndExecuteQueriesMIndexSift();
+
+        createAndStoreMTreeRandom();
+        createAndStoreMTreeSift();
+//        createAndStoreMTreeDecaf();
+        createAndStoreMTreeMpeg();
+
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt")));
+//        restoreAndExecuteQueriesMTreeRandom();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt")));
+//        restoreAndExecuteQueriesMTreeSift();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Decaf.txt")));
+//        restoreAndExecuteQueriesMTreeDecaf();
+//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
+//        restoreAndExecuteQueriesMTreeMpeg();
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,

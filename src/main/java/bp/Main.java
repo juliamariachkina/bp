@@ -2,6 +2,7 @@ package bp;
 
 import bp.datasets.*;
 import bp.evaluators.SimilarityQueryEvaluator;
+import bp.evaluators.SynergyEffectivenessEvaluator;
 import bp.utils.Utility;
 import bp.utils.filteringCoefs.PivotCoefs;
 import messif.algorithms.Algorithm;
@@ -18,6 +19,8 @@ import mtree.MTree;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,10 +60,10 @@ public class Main {
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt")));
 //        restoreAndExecuteQueriesMIndexSift();
 
-        createAndStoreMTreeRandom();
-        createAndStoreMTreeSift();
+//        createAndStoreMTreeRandom();
+//        createAndStoreMTreeSift();
 //        createAndStoreMTreeDecaf();
-        createAndStoreMTreeMpeg();
+//        createAndStoreMTreeMpeg();
 
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt")));
 //        restoreAndExecuteQueriesMTreeRandom();
@@ -70,6 +73,9 @@ public class Main {
 //        restoreAndExecuteQueriesMTreeDecaf();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
 //        restoreAndExecuteQueriesMTreeMpeg();
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv", new RandomData(),
+                new String[]{"src/main/java/bp/errorOutputs/laesa/Random.txt.cz", "src/main/java/bp/errorOutputs/mtree/Random.txt.cz"})
+                .evaluateSynergyEffectiveness();
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,

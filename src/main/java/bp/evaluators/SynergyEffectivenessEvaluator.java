@@ -18,14 +18,14 @@ public class SynergyEffectivenessEvaluator {
 
     public static final int MIN_RECALL = 28;
 
-    private String filePathToStoreResults;
-    private DatasetData datasetData;
-    private String[] csvFilePaths;
+    private final String filePathToStoreResults;
+    private final DatasetData datasetData;
+    private final String[] errFilePaths;
 
-    public SynergyEffectivenessEvaluator(String filePathToStoreResults, DatasetData datasetData, String[] csvFilePaths) {
+    public SynergyEffectivenessEvaluator(String filePathToStoreResults, DatasetData datasetData, String[] errFilePaths) {
         this.filePathToStoreResults = filePathToStoreResults;
         this.datasetData = datasetData;
-        this.csvFilePaths = csvFilePaths;
+        this.errFilePaths = errFilePaths;
     }
 
     private int computeCandSetMedian(Map<String, List<String>> queryURItoObjectURIs, Map<String, Set<String>> groundTruth,
@@ -59,8 +59,8 @@ public class SynergyEffectivenessEvaluator {
 
     public void evaluateSynergyEffectiveness() throws IOException {
         List<Map<String, List<String>>> queryURIsToObjectURIsList = new ArrayList<>();
-        for (String csvFilePath : csvFilePaths) {
-            queryURIsToObjectURIsList.add(new UnfilteredObjectsParser(csvFilePath).parse());
+        for (String errFilePath : errFilePaths) {
+            queryURIsToObjectURIsList.add(new UnfilteredObjectsParser(errFilePath).parse());
         }
 
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();

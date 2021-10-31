@@ -2,12 +2,10 @@ package bp;
 
 import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
+import bp.utils.Utility;
 import messif.objects.util.RankedAbstractObject;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,11 +37,21 @@ public class CSVWriter {
                                                  Map<String, List<String>> queryURIsToIntersectionObjectURIs) throws IOException {
         groundTruth.forEach((key, value) -> value.retainAll(queryURIsToIntersectionObjectURIs.get(key)));
 
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
         for (Map.Entry<String, Set<String>> queryURItoFoundTrueNNs : groundTruth.entrySet()) {
             writer.println("IDquery;" + queryURItoFoundTrueNNs.getKey());
             queryURIsToIntersectionObjectURIs.get(queryURItoFoundTrueNNs.getKey()).forEach(writer::println);
             writer.println("Recall;" + queryURItoFoundTrueNNs.getValue().size());
+        }
+        writer.flush();
+    }
+
+    public static void writeReducedErrOutput(String filePath, Map<String, List<String>> queryURIsToObjectURIs)
+            throws IOException {
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
+        for (Map.Entry<String, List<String>> queryURItoObjectURIs : queryURIsToObjectURIs.entrySet()) {
+            writer.println("IDquery;" + queryURItoObjectURIs.getKey());
+            queryURItoObjectURIs.getValue().forEach(writer::println);
         }
         writer.flush();
     }

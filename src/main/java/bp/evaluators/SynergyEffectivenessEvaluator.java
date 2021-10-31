@@ -20,12 +20,10 @@ public class SynergyEffectivenessEvaluator {
 
     private final String filePathToStoreResults;
     private final DatasetData datasetData;
-    private final String[] errFilePaths;
 
-    public SynergyEffectivenessEvaluator(String filePathToStoreResults, DatasetData datasetData, String[] errFilePaths) {
+    public SynergyEffectivenessEvaluator(String filePathToStoreResults, DatasetData datasetData) {
         this.filePathToStoreResults = filePathToStoreResults;
         this.datasetData = datasetData;
-        this.errFilePaths = errFilePaths;
     }
 
     private int computeCandSetMedian(Map<String, List<String>> queryURItoObjectURIs, Map<String, Set<String>> groundTruth,
@@ -57,25 +55,29 @@ public class SynergyEffectivenessEvaluator {
         return candSetSizePerQueryToMeetAccuracy[datasetData.queryCount / 2];
     }
 
-    public void evaluateSynergyEffectiveness() throws IOException {
-        List<Map<String, List<String>>> queryURIsToObjectURIsList = new ArrayList<>();
-        for (String errFilePath : errFilePaths) {
-            queryURIsToObjectURIsList.add(new UnfilteredObjectsParser(errFilePath).parse());
-        }
-
+    public void reduceErrOutputFilesToMedianDistComp(String errFilePath) throws IOException {
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
-        queryURIsToObjectURIsList.forEach(queryURIsToObjectURIs -> {
-            int candSetMedian = computeCandSetMedian(queryURIsToObjectURIs, groundTruth, pivotIter);
-            queryURIsToObjectURIs.forEach((key, value) -> value = value.stream().limit(candSetMedian).collect(Collectors.toList()));
-        });
 
-        Map<String, List<String>> queryURIsToIntersectionObjectURIs = queryURIsToObjectURIsList.stream().reduce(
-                (a, b) -> {
-                    a.forEach((key, value) -> value.retainAll(b.get(key)));
-                    return a;
-                }).get();
+        Map<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
+        int candSetMedian = computeCandSetMedian(queryURIsToObjectURIs, groundTruth, pivotIter);
+        LOG.info("Cand set median " + candSetMedian);
+        queryURIsToObjectURIs.forEach((key, value) -> value = value.stream().limit(candSetMedian).collect(Collectors.toList()));
 
-        CSVWriter.writeSynergyEffectiveness(groundTruth, filePathToStoreResults, queryURIsToIntersectionObjectURIs);
+        CSVWriter.writeReducedErrOutput(filePathToStoreResults, queryURIsToObjectURIs);
+    }
+
+    public void evaluateSynergyEffectiveness(String[] errFilePaths) throws IOException {
+        Map<String, List<String>> queryURIsToIntersectionObjectURIs = new HashMap<>();
+        for (String errFilePath : errFilePaths) {
+            Map<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
+            if (queryURIsToIntersectionObjectURIs.isEmpty())
+                queryURIsToIntersectionObjectURIs = queryURIsToObjectURIs;
+            else
+                queryURIsToIntersectionObjectURIs.forEach((key, value) -> value.retainAll(queryURIsToObjectURIs.get(key)));
+        }
+
+        CSVWriter.writeSynergyEffectiveness(new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse(),
+                filePathToStoreResults, queryURIsToIntersectionObjectURIs);
     }
 }

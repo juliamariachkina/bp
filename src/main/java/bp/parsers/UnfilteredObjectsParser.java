@@ -1,8 +1,8 @@
 package bp.parsers;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import bp.utils.Utility;
+
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -19,7 +19,7 @@ public class UnfilteredObjectsParser {
 
     public Map<String, List<String>> parse() throws IOException {
         Map<String, List<String>> result = new HashMap<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(Utility.openInputStream(filePath)));
 
         Pattern queryObjectUriPattern = Pattern.compile("INFO: Query object with uri: (.*)");
         Matcher queryObjectUriMatcher;

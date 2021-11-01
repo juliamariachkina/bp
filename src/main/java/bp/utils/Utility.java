@@ -46,9 +46,9 @@ public class Utility {
 
     public static OutputStream getOutputStream(String path) {
         try {
-            if (path.toLowerCase().endsWith("gz"))
-                return new GZIPOutputStream(new FileOutputStream(path));
-            return new FileOutputStream(path);
+            return path.toLowerCase().endsWith("gz") ?
+                    new GZIPOutputStream(new FileOutputStream(path)) :
+                    new FileOutputStream(path);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }

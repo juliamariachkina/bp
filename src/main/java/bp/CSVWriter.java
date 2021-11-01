@@ -34,8 +34,9 @@ public class CSVWriter {
     }
 
     public static void writeSynergyEffectiveness(Map<String, Set<String>> groundTruth, String filePath,
-                                                 Map<String, List<String>> queryURIsToIntersectionObjectURIs) throws IOException {
+                                                 Map<String, Set<String>> queryURIsToIntersectionObjectURIs) {
         groundTruth.forEach((key, value) -> value.retainAll(queryURIsToIntersectionObjectURIs.get(key)));
+        groundTruth.forEach((key, value) -> LOG.info("Query " + key + " values count " + value.size()));
 
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
         for (Map.Entry<String, Set<String>> queryURItoFoundTrueNNs : groundTruth.entrySet()) {
@@ -44,16 +45,17 @@ public class CSVWriter {
             writer.println("Recall;" + queryURItoFoundTrueNNs.getValue().size());
         }
         writer.flush();
+        writer.close();
     }
 
-    public static void writeReducedErrOutput(String filePath, Map<String, List<String>> queryURIsToObjectURIs)
-            throws IOException {
+    public static void writeReducedErrOutput(String filePath, Map<String, List<String>> queryURIsToObjectURIs) {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
         for (Map.Entry<String, List<String>> queryURItoObjectURIs : queryURIsToObjectURIs.entrySet()) {
             writer.println("IDquery;" + queryURItoObjectURIs.getKey());
             queryURItoObjectURIs.getValue().forEach(writer::println);
         }
         writer.flush();
+        writer.close();
     }
 
     public static void writePivotCoefs(Map<String, Float> pivotURItoCoef, String filePath) throws IOException {

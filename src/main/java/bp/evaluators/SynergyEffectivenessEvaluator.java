@@ -3,6 +3,7 @@ package bp.evaluators;
 import bp.CSVWriter;
 import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
+import bp.parsers.ReducedOutputParser;
 import bp.parsers.UnfilteredObjectsParser;
 import bp.utils.Utility;
 import messif.objects.LocalAbstractObject;
@@ -68,9 +69,9 @@ public class SynergyEffectivenessEvaluator {
     }
 
     public void evaluateSynergyEffectiveness(String[] errFilePaths) throws IOException {
-        Map<String, List<String>> queryURIsToIntersectionObjectURIs = new HashMap<>();
+        Map<String, Set<String>> queryURIsToIntersectionObjectURIs = new HashMap<>();
         for (String errFilePath : errFilePaths) {
-            Map<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
+            Map<String, Set<String>> queryURIsToObjectURIs = new ReducedOutputParser(errFilePath).parse();
             if (queryURIsToIntersectionObjectURIs.isEmpty())
                 queryURIsToIntersectionObjectURIs = queryURIsToObjectURIs;
             else

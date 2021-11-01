@@ -73,13 +73,13 @@ public class Main {
 //        restoreAndExecuteQueriesMTreeDecaf();
 //        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
 //        restoreAndExecuteQueriesMTreeMpeg();
-        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
-                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutput/laesa/Random.txt.gz");
+//       new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutput/laesa/Random.txt.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Random.txt.gz", new RandomData())
 //                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutput/mtree/Random.txt.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv", new RandomData())
-//                .evaluateSynergyEffectiveness(new String[]{"src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
-//                "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{"src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,

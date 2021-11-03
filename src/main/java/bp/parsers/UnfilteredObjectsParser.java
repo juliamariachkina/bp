@@ -17,8 +17,8 @@ public class UnfilteredObjectsParser {
         this.filePath = filePath;
     }
 
-    public Map<String, List<String>> parse() throws IOException {
-        Map<String, List<String>> result = new HashMap<>();
+    public SortedMap<String, List<String>> parse() throws IOException {
+        SortedMap<String, List<String>> result = new TreeMap<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(Utility.openInputStream(filePath)));
 
         Pattern queryObjectUriPattern = Pattern.compile("INFO: Query object with uri: (.*)");
@@ -45,6 +45,7 @@ public class UnfilteredObjectsParser {
                         dataObjectUriMatcher.group(1));
             line = reader.readLine();
         }
+        result.put(queryURI, computedDistancesTo);
         return result;
     }
 }

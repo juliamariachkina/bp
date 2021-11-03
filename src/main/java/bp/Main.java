@@ -20,8 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,57 +28,13 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-//        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
-//        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
-//        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
-//        createAndStoreLaesaRandom();
-//        createAndStoreLaesaMpeg();
-//        createAndStoreLaesaDecaf();
-//        createAndStoreMIndexRandom();
-//        createAndStoreMIndexMpeg();
-//        createAndStoreMIndexDecaf();
-
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Random.txt")));
-//        restoreAndExecuteQueriesLaesaRandom();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Mpeg.txt")));
-//        restoreAndExecuteQueriesLaesaMpeg();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Decaf.txt")));
-//        restoreAndExecuteQueriesLaesaDecaf();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Random.txt")));
-//        restoreAndExecuteQueriesMIndexRandom();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Mpeg.txt")));
-//        restoreAndExecuteQueriesMIndexMpeg();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Decaf.txt")));
-//        restoreAndExecuteQueriesMIndexDecaf();
-
-//        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
-//        createAndStoreMIndexSift();
-//        createAndStoreLaesaSift();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/laesa/Sift.txt")));
-//        restoreAndExecuteQueriesLaesaSift();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt")));
-//        restoreAndExecuteQueriesMIndexSift();
-
-//        createAndStoreMTreeRandom();
-//        createAndStoreMTreeSift();
-//        createAndStoreMTreeDecaf();
-//        createAndStoreMTreeMpeg();
-
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt")));
-//        restoreAndExecuteQueriesMTreeRandom();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt")));
-//        restoreAndExecuteQueriesMTreeSift();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Decaf.txt")));
-//        restoreAndExecuteQueriesMTreeDecaf();
-//        System.setErr(new PrintStream(new FileOutputStream("src/main/java/bp/errorOutputs/mtree/Mpeg.txt")));
-//        restoreAndExecuteQueriesMTreeMpeg();
-//       new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
-//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutput/laesa/Random.txt.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
+                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Random.txt.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Random.txt.gz", new RandomData())
-//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutput/mtree/Random.txt.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv.gz", new RandomData())
-                .evaluateSynergyEffectiveness(new String[]{"src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
-                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mtree/Random.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{"src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,

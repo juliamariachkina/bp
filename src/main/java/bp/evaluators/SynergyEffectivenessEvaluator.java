@@ -9,8 +9,12 @@ import bp.utils.Utility;
 import messif.objects.LocalAbstractObject;
 import messif.objects.util.AbstractObjectIterator;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -60,7 +64,7 @@ public class SynergyEffectivenessEvaluator {
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
 
-        Map<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
+        SortedMap<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
         int candSetMedian = computeCandSetMedian(queryURIsToObjectURIs, groundTruth, pivotIter);
         LOG.info("Cand set median " + candSetMedian);
         queryURIsToObjectURIs.forEach((key, value) -> value = value.stream().limit(candSetMedian).collect(Collectors.toList()));
@@ -69,16 +73,35 @@ public class SynergyEffectivenessEvaluator {
     }
 
     public void evaluateSynergyEffectiveness(String[] errFilePaths) throws IOException {
-        Map<String, Set<String>> queryURIsToIntersectionObjectURIs = new HashMap<>();
+        if (errFilePaths.length < 2)
+            return;
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
+        Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
+        List<ReducedOutputParser> parsers = new ArrayList<>();
         for (String errFilePath : errFilePaths) {
-            Map<String, Set<String>> queryURIsToObjectURIs = new ReducedOutputParser(errFilePath).parse();
-            if (queryURIsToIntersectionObjectURIs.isEmpty())
-                queryURIsToIntersectionObjectURIs = queryURIsToObjectURIs;
-            else
-                queryURIsToIntersectionObjectURIs.forEach((key, value) -> value.retainAll(queryURIsToObjectURIs.get(key)));
+            parsers.add(new ReducedOutputParser(errFilePath));
         }
+        Set<String> intersectionObjectURIs = new HashSet<>();
 
-        CSVWriter.writeSynergyEffectiveness(new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse(),
-                filePathToStoreResults, queryURIsToIntersectionObjectURIs);
+        for (int i = 0; i < datasetData.queryCount; ++i) {
+            for (ReducedOutputParser parser : parsers)
+                parser.parseNextQueryEvalErrOutput();
+            String currentQueryURI = parsers.get(0).getCurrentQueryURI();
+            if (parsers.stream()
+                    .map(ReducedOutputParser::getCurrentQueryURI)
+                    .anyMatch(queryURI -> !queryURI.equals(currentQueryURI)))
+                throw new IllegalArgumentException("Not all reduced outputs were stored in a sorted order");
+            intersectionObjectURIs = parsers.stream()
+                    .map(ReducedOutputParser::getCurrentObjectUris)
+                    .reduce((a, b) -> {
+                        a.retainAll(b);
+                        return a;
+                    }).get();
+
+            CSVWriter.writeNextQuerySynergyEffectiveness(writer, groundTruth.get(currentQueryURI),
+                    currentQueryURI, intersectionObjectURIs);
+        }
+        writer.flush();
+        writer.close();
     }
 }

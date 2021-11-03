@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.logging.Logger;
 
 public class CSVWriter {
@@ -33,22 +34,16 @@ public class CSVWriter {
         writer.flush();
     }
 
-    public static void writeSynergyEffectiveness(Map<String, Set<String>> groundTruth, String filePath,
-                                                 Map<String, Set<String>> queryURIsToIntersectionObjectURIs) {
-        groundTruth.forEach((key, value) -> value.retainAll(queryURIsToIntersectionObjectURIs.get(key)));
-        groundTruth.forEach((key, value) -> LOG.info("Query " + key + " values count " + value.size()));
+    public static void writeNextQuerySynergyEffectiveness(PrintWriter writer, Set<String> groundTruth,
+                                                          String queryURI, Set<String> intersectionObjectURIs) {
+        groundTruth.retainAll(intersectionObjectURIs);
 
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
-        for (Map.Entry<String, Set<String>> queryURItoFoundTrueNNs : groundTruth.entrySet()) {
-            writer.println("IDquery;" + queryURItoFoundTrueNNs.getKey());
-            queryURIsToIntersectionObjectURIs.get(queryURItoFoundTrueNNs.getKey()).forEach(writer::println);
-            writer.println("Recall;" + queryURItoFoundTrueNNs.getValue().size());
-        }
-        writer.flush();
-        writer.close();
+        writer.println("IDquery;" + queryURI);
+        intersectionObjectURIs.forEach(writer::println);
+        writer.println("Recall;" + groundTruth.size());
     }
 
-    public static void writeReducedErrOutput(String filePath, Map<String, List<String>> queryURIsToObjectURIs) {
+    public static void writeReducedErrOutput(String filePath, SortedMap<String, List<String>> queryURIsToObjectURIs) {
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
         for (Map.Entry<String, List<String>> queryURItoObjectURIs : queryURIsToObjectURIs.entrySet()) {
             writer.println("IDquery;" + queryURItoObjectURIs.getKey());

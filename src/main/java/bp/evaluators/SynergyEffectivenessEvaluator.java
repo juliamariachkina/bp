@@ -3,8 +3,8 @@ package bp.evaluators;
 import bp.CSVWriter;
 import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
-import bp.parsers.ReducedOutputParser;
-import bp.parsers.UnfilteredObjectsParser;
+import bp.parsers.ReducedOutputIterator;
+import bp.parsers.UnfilteredObjectsIterator;
 import bp.utils.Utility;
 import messif.objects.LocalAbstractObject;
 import messif.objects.util.AbstractObjectIterator;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -31,13 +30,15 @@ public class SynergyEffectivenessEvaluator {
         this.datasetData = datasetData;
     }
 
-    private int computeCandSetMedian(Map<String, List<String>> queryURItoObjectURIs, Map<String, Set<String>> groundTruth,
-                                     AbstractObjectIterator<LocalAbstractObject> pivotIter) {
+    private int computeCandSetMedian(String errFilePath, Map<String, Set<String>> groundTruth,
+                                     AbstractObjectIterator<LocalAbstractObject> pivotIter) throws IOException {
         int[] candSetSizePerQueryToMeetAccuracy = new int[datasetData.queryCount];
+        UnfilteredObjectsIterator it = new UnfilteredObjectsIterator(errFilePath);
         int index = 0;
-        for (Map.Entry<String, List<String>> queryURItoObjectURIsEntry : queryURItoObjectURIs.entrySet()) {
+        while (it.hasNext()) {
+            it.parseNextQueryEvalErrOutput();
             int correctlyFound = 0, count = 0;
-            for (String objectURI : queryURItoObjectURIsEntry.getValue()) {
+            for (String objectURI : it.getCurrentObjectUrisList()) {
                 if (correctlyFound >= MIN_RECALL)
                     break;
                 try {
@@ -46,12 +47,12 @@ public class SynergyEffectivenessEvaluator {
                 } catch (NoSuchElementException e) {
                     //do nothing, since this means that the current object isn't pivot
                 }
-                if (groundTruth.get(queryURItoObjectURIsEntry.getKey()).contains(objectURI))
+                if (groundTruth.get(it.getCurrentQueryURI()).contains(objectURI))
                     ++correctlyFound;
                 ++count;
             }
             if (correctlyFound < MIN_RECALL)
-                LOG.warning("The size of a candidate set for a query object " + queryURItoObjectURIsEntry.getKey()
+                LOG.warning("The size of a candidate set for a query object " + it.getCurrentQueryURI()
                         + "isn't sufficient, since the recall is " + correctlyFound);
             candSetSizePerQueryToMeetAccuracy[index] = count;
             ++index;
@@ -64,12 +65,10 @@ public class SynergyEffectivenessEvaluator {
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
 
-        SortedMap<String, List<String>> queryURIsToObjectURIs = new UnfilteredObjectsParser(errFilePath).parse();
-        int candSetMedian = computeCandSetMedian(queryURIsToObjectURIs, groundTruth, pivotIter);
+        int candSetMedian = computeCandSetMedian(errFilePath, groundTruth, pivotIter);
         LOG.info("Cand set median " + candSetMedian);
-        queryURIsToObjectURIs.forEach((key, value) -> value = value.stream().limit(candSetMedian).collect(Collectors.toList()));
 
-        CSVWriter.writeReducedErrOutput(filePathToStoreResults, queryURIsToObjectURIs);
+        CSVWriter.writeReducedErrOutput(errFilePath, candSetMedian, filePathToStoreResults);
     }
 
     public void evaluateSynergyEffectiveness(String[] errFilePaths) throws IOException {
@@ -77,22 +76,23 @@ public class SynergyEffectivenessEvaluator {
             return;
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
-        List<ReducedOutputParser> parsers = new ArrayList<>();
+        List<ReducedOutputIterator> iterators = new ArrayList<>();
         for (String errFilePath : errFilePaths) {
-            parsers.add(new ReducedOutputParser(errFilePath));
+            iterators.add(new ReducedOutputIterator(errFilePath));
         }
         Set<String> intersectionObjectURIs = new HashSet<>();
 
         for (int i = 0; i < datasetData.queryCount; ++i) {
-            for (ReducedOutputParser parser : parsers)
-                parser.parseNextQueryEvalErrOutput();
-            String currentQueryURI = parsers.get(0).getCurrentQueryURI();
-            if (parsers.stream()
-                    .map(ReducedOutputParser::getCurrentQueryURI)
+            for (ReducedOutputIterator iterator : iterators)
+                iterator.parseNextQueryEvalErrOutput();
+            String currentQueryURI = iterators.get(0).getCurrentQueryURI();
+            LOG.info("Processing " + currentQueryURI);
+            if (iterators.stream()
+                    .map(ReducedOutputIterator::getCurrentQueryURI)
                     .anyMatch(queryURI -> !queryURI.equals(currentQueryURI)))
                 throw new IllegalArgumentException("Not all reduced outputs were stored in a sorted order");
-            intersectionObjectURIs = parsers.stream()
-                    .map(ReducedOutputParser::getCurrentObjectUris)
+            intersectionObjectURIs = iterators.stream()
+                    .map(ReducedOutputIterator::getCurrentObjectUrisSet)
                     .reduce((a, b) -> {
                         a.retainAll(b);
                         return a;

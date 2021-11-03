@@ -2,6 +2,7 @@ package bp;
 
 import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
+import bp.parsers.UnfilteredObjectsIterator;
 import bp.utils.Utility;
 import messif.objects.util.RankedAbstractObject;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class CSVWriter {
     private final String filePath;
@@ -43,11 +45,14 @@ public class CSVWriter {
         writer.println("Recall;" + groundTruth.size());
     }
 
-    public static void writeReducedErrOutput(String filePath, SortedMap<String, List<String>> queryURIsToObjectURIs) {
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePath))));
-        for (Map.Entry<String, List<String>> queryURItoObjectURIs : queryURIsToObjectURIs.entrySet()) {
-            writer.println("IDquery;" + queryURItoObjectURIs.getKey());
-            queryURItoObjectURIs.getValue().forEach(writer::println);
+    public static void writeReducedErrOutput(String errFilePath, int limit, String resultFilePath) throws IOException {
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(resultFilePath))));
+        UnfilteredObjectsIterator it = new UnfilteredObjectsIterator(errFilePath);
+        while (it.hasNext()) {
+            it.parseNextQueryEvalErrOutput();
+            List<String> objectUris = it.getCurrentObjectUrisList().stream().limit(limit).collect(Collectors.toList());
+            writer.println("IDquery;" + it.getCurrentQueryURI());
+            objectUris.forEach(writer::println);
         }
         writer.flush();
         writer.close();

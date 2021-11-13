@@ -3,6 +3,7 @@ package bp;
 import bp.datasets.*;
 import bp.evaluators.SimilarityQueryEvaluator;
 import bp.evaluators.SynergyEffectivenessEvaluator;
+import bp.indexes.LimitedAnglesMetricFiltering;
 import bp.utils.Utility;
 import bp.utils.filteringCoefs.PivotCoefs;
 import messif.algorithms.Algorithm;
@@ -13,6 +14,7 @@ import messif.buckets.CapacityFullException;
 import messif.objects.LocalAbstractObject;
 import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
+import messif.operations.data.InsertOperation;
 import mindex.algorithms.MIndexAlgorithm;
 import mtree.MTree;
 
@@ -28,13 +30,108 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
-                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Random.txt.gz");
+        restoreAndExecuteQueriesLaesaWithLimitedAnglesRandom();
+
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_50_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_192.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_50_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_256.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_50_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_64.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_50_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_80_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_80_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_80_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_80_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_50_128.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_50_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_50_192.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_50_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_50_256.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_50_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_50_64.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_50_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_80_128.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_80_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_80_192.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_80_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_80_256.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_80_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/sift/GHP_80_64.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/sift/GHP_80_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_128.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_192.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_256.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_80_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_80_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_256.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_80_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_64.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_80_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_50_128.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_50_192.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_50_256.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_50_64.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_64.data.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_128.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_80_128.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_192.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_80_192.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_256.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_80_256.data.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_64.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_80_64.data.gz");
+
+
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Random.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Random.txt.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Random.txt.gz", new RandomData())
 //                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mtree/Random.txt.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtree.csv.gz", new RandomData())
-//                .evaluateSynergyEffectiveness(new String[]{"src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
-//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mindex/Random.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mindex/Random.txt.gz");
+
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Sift.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Sift.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Mpeg.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesa/Decaf.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Sift.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mtree/Sift.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Mpeg.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mtree/Decaf.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mtree/Decaf.txt.gz");
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mindex/Sift.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mindex/Sift.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mindex/Mpeg.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/mindex/Decaf.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/mindex/Decaf.txt.gz");
     }
 
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,
@@ -44,18 +141,7 @@ public class Main {
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
         LOG.log(Level.INFO, "Pivot iterator created");
 
-        Algorithm algorithm;
-        if (algorithmClass.equals(SequentialScan.class))
-            algorithm = new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
-        else {
-            if (algorithmClass.equals(MIndexAlgorithm.class))
-                algorithm = createMIndex(datasetData);
-            else {
-                int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1).get(0).getSize();
-                algorithm = new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount,
-                        pivotIter, datasetData.pivotCount, datasetData.pivotCount);
-            }
-        }
+        Algorithm algorithm = createAlgorithm(datasetData, algorithmClass, pivotIter);
         LOG.log(Level.INFO, "Algorithm initialised");
 
         SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
@@ -66,6 +152,27 @@ public class Main {
 
         similarityQueryEvaluator.storeToFile(filePathToStoreAlgo);
         LOG.log(Level.INFO, "Algorithm stored to a file");
+    }
+
+    private static Algorithm createAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,
+                                             AbstractObjectIterator<LocalAbstractObject> pivotIter)
+            throws CapacityFullException, InstantiationException, AlgorithmMethodException, IOException {
+        if (algorithmClass.equals(SequentialScan.class))
+            return new SequentialScan(datasetData.bucketClass, pivotIter, datasetData.pivotCount, true);
+        if (algorithmClass.equals(MIndexAlgorithm.class))
+            return createMIndex(datasetData);
+        if (algorithmClass.equals(LimitedAnglesMetricFiltering.class))
+            return new LimitedAnglesMetricFiltering(datasetData.bucketClass, pivotIter, datasetData.pivotCount,
+                    true, datasetData.pivotCoefsFilePath);
+        return createMtree(datasetData, pivotIter);
+    }
+
+    private static MTree createMtree(DatasetData datasetData, AbstractObjectIterator<LocalAbstractObject> pivotIter)
+            throws AlgorithmMethodException, InstantiationException {
+        int internalNodeCapacity = 50 * Utility.getObjectsList(datasetData.pivotFilePath, datasetData.objectClass, 1)
+                .get(0).getSize();
+        return new MTree(internalNodeCapacity, internalNodeCapacity * 4L, datasetData.pivotCount, pivotIter,
+                datasetData.pivotCount, datasetData.pivotCount);
     }
 
     private static MIndexAlgorithm createMIndex(DatasetData datasetData) throws AlgorithmMethodException, InstantiationException {
@@ -150,6 +257,32 @@ public class Main {
         createAndStoreAlgorithm(new MpegData(), MIndexAlgorithm.class, 30, "src/main/java/bp/storedAlgos/mindex/Mpeg");
     }
 
+    /*-----------------------------------------LAESA with limited angles---------------------------------------------*/
+
+    public static void createAndStoreLaesaWithLimitedAnglesSift()
+            throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new SiftData(), LimitedAnglesMetricFiltering.class, 30,
+                "src/main/java/bp/storedAlgos/laesaLimAngles/Sift");
+    }
+
+    public static void createAndStoreLaesaWithLimitedAnglesRandom()
+            throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new RandomData(), LimitedAnglesMetricFiltering.class, 30,
+                "src/main/java/bp/storedAlgos/laesaLimAngles/Random");
+    }
+
+    public static void createAndStoreLaesaWithLimitedAnglesDecaf()
+            throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new DecafData(), LimitedAnglesMetricFiltering.class, 30,
+                "src/main/java/bp/storedAlgos/laesaLimAngles/Decaf");
+    }
+
+    public static void createAndStoreLaesaWithLimitedAnglesMpeg()
+            throws CapacityFullException, IOException, InstantiationException, AlgorithmMethodException {
+        createAndStoreAlgorithm(new MpegData(), LimitedAnglesMetricFiltering.class, 30,
+                "src/main/java/bp/storedAlgos/laesaLimAngles/Mpeg");
+    }
+
     public static <T extends LocalAbstractObject> void restoreAndExecuteQueries(DatasetData datasetData, int k,
                                                                                 String algoFilePath,
                                                                                 String filePathToStoreResults,
@@ -227,6 +360,28 @@ public class Main {
     public static void restoreAndExecuteQueriesMIndexMpeg() throws IOException, ClassNotFoundException {
         restoreAndExecuteQueries(new MpegData(), 30, "src/main/java/bp/storedAlgos/mindex/Mpeg",
                 "src/main/java/bp/results/mindex/MIndexMpeg.csv", false);
+    }
+
+    /*-----------------------------------LAESA with limited angles--------------------------------------------*/
+
+    public static void restoreAndExecuteQueriesLaesaWithLimitedAnglesSift() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/laesaLimAngles/Sift",
+                "src/main/java/bp/results/laesaLimAngles/LaesaLimAnglesSift.csv", true);
+    }
+
+    public static void restoreAndExecuteQueriesLaesaWithLimitedAnglesRandom() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/laesaLimAngles/Random",
+                "src/main/java/bp/results/laesaLimAngles/LaesaLimAnglesRandom.csv", true);
+    }
+
+    public static void restoreAndExecuteQueriesLaesaWithLimitedAnglesDecaf() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new DecafData(), 30, "src/main/java/bp/storedAlgos/laesaLimAngles/Decaf",
+                "src/main/java/bp/results/laesaLimAngles/LaesaLimAnglesDecaf.csv", true);
+    }
+
+    public static void restoreAndExecuteQueriesLaesaWithLimitedAnglesMpeg() throws IOException, ClassNotFoundException {
+        restoreAndExecuteQueries(new MpegData(), 30, "src/main/java/bp/storedAlgos/laesaLimAngles/Mpeg",
+                "src/main/java/bp/results/laesaLimAngles/LaesaLimAnglesMpeg.csv", true);
     }
 
     /*--------------------------------------------Sequential-scan------------------------------------------------------*/

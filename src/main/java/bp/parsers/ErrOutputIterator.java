@@ -23,10 +23,12 @@ public class ErrOutputIterator {
         this.dataObjectUriPattern = dataObjectUriPattern;
         this.reader = reader;
 
-        String line = reader.readLine();
-        queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
-        if (queryObjectUriMatcher.matches())
-            nextQueryUri = queryObjectUriMatcher.group(1);
+        do {
+            String line = reader.readLine();
+            LOG.info(line);
+            queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
+        } while (!queryObjectUriMatcher.matches());
+        nextQueryUri = queryObjectUriMatcher.group(1);
     }
 
     public String getCurrentQueryURI() {
@@ -58,8 +60,11 @@ public class ErrOutputIterator {
                 return;
             }
             Matcher dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
-            if (dataObjectUriMatcher.matches())
-                currentObjectUris.add(dataObjectUriMatcher.group(1));
+            if (dataObjectUriMatcher.matches()) {
+                currentObjectUris.add(dataObjectUriMatcher.group(1).equals(currentQueryUri) && dataObjectUriMatcher.groupCount() > 1 ?
+                        dataObjectUriMatcher.group(2) :
+                        dataObjectUriMatcher.group(1));
+            }
             line = reader.readLine();
         }
         nextQueryUri = null;

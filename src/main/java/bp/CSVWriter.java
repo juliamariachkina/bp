@@ -52,6 +52,7 @@ public class CSVWriter {
             it.parseNextQueryEvalErrOutput();
             List<String> objectUris = it.getCurrentObjectUrisList().stream().limit(limit).collect(Collectors.toList());
             writer.println("IDquery;" + it.getCurrentQueryURI());
+            LOG.info("Writing query " + it.getCurrentQueryURI());
             objectUris.forEach(writer::println);
         }
         writer.flush();

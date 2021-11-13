@@ -37,6 +37,7 @@ public class SynergyEffectivenessEvaluator {
         int index = 0;
         while (it.hasNext()) {
             it.parseNextQueryEvalErrOutput();
+            LOG.info("Query URI " + it.getCurrentQueryURI() + " object count " + it.getCurrentObjectUrisList().size());
             int correctlyFound = 0, count = 0;
             for (String objectURI : it.getCurrentObjectUrisList()) {
                 if (correctlyFound >= MIN_RECALL)
@@ -53,7 +54,7 @@ public class SynergyEffectivenessEvaluator {
             }
             if (correctlyFound < MIN_RECALL)
                 LOG.warning("The size of a candidate set for a query object " + it.getCurrentQueryURI()
-                        + "isn't sufficient, since the recall is " + correctlyFound);
+                        + " isn't sufficient, since the recall is " + correctlyFound);
             candSetSizePerQueryToMeetAccuracy[index] = count;
             ++index;
         }

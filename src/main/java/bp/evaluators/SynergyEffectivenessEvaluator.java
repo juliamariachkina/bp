@@ -2,6 +2,7 @@ package bp.evaluators;
 
 import bp.CSVWriter;
 import bp.datasets.DatasetData;
+import bp.parsers.ErrOutputIterator;
 import bp.parsers.GroundTruthParser;
 import bp.parsers.ReducedOutputIterator;
 import bp.parsers.UnfilteredObjectsIterator;
@@ -34,7 +35,7 @@ public class SynergyEffectivenessEvaluator {
                                      AbstractObjectIterator<LocalAbstractObject> pivotIter) throws IOException {
         int[] candSetSizePerQueryToMeetAccuracy = new int[datasetData.queryCount];
         UnfilteredObjectsIterator it = new UnfilteredObjectsIterator(errFilePath);
-        int index = 0;
+        int index = 0, under28 = 0;
         while (it.hasNext()) {
             it.parseNextQueryEvalErrOutput();
             LOG.info("Query URI " + it.getCurrentQueryURI() + " object count " + it.getCurrentObjectUrisList().size());
@@ -52,17 +53,21 @@ public class SynergyEffectivenessEvaluator {
                     ++correctlyFound;
                 ++count;
             }
-            if (correctlyFound < MIN_RECALL)
+            if (correctlyFound < MIN_RECALL) {
                 LOG.warning("The size of a candidate set for a query object " + it.getCurrentQueryURI()
                         + " isn't sufficient, since the recall is " + correctlyFound);
+                ++under28;
+            }
             candSetSizePerQueryToMeetAccuracy[index] = count;
             ++index;
         }
+        LOG.info("Number of queries with the recall under 28 -- " + under28);
         Arrays.sort(candSetSizePerQueryToMeetAccuracy);
         return candSetSizePerQueryToMeetAccuracy[datasetData.queryCount / 2];
     }
 
     public void reduceErrOutputFilesToMedianDistComp(String errFilePath) throws IOException {
+        LOG.info("Processing " + errFilePath);
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
 
@@ -77,23 +82,25 @@ public class SynergyEffectivenessEvaluator {
             return;
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
-        List<ReducedOutputIterator> iterators = new ArrayList<>();
+        List<ErrOutputIterator> iterators = new ArrayList<>();
         for (String errFilePath : errFilePaths) {
-            iterators.add(new ReducedOutputIterator(errFilePath));
+            iterators.add(errFilePath.toLowerCase().contains("laesa") || errFilePath.toLowerCase().contains("mtree") ?
+                    new UnfilteredObjectsIterator(errFilePath) :
+                    new ReducedOutputIterator(errFilePath));
         }
         Set<String> intersectionObjectURIs = new HashSet<>();
 
         for (int i = 0; i < datasetData.queryCount; ++i) {
-            for (ReducedOutputIterator iterator : iterators)
+            for (ErrOutputIterator iterator : iterators)
                 iterator.parseNextQueryEvalErrOutput();
             String currentQueryURI = iterators.get(0).getCurrentQueryURI();
-            LOG.info("Processing " + currentQueryURI);
+            LOG.info("Processing [" + currentQueryURI + "]");
             if (iterators.stream()
-                    .map(ReducedOutputIterator::getCurrentQueryURI)
+                    .map(ErrOutputIterator::getCurrentQueryURI)
                     .anyMatch(queryURI -> !queryURI.equals(currentQueryURI)))
                 throw new IllegalArgumentException("Not all reduced outputs were stored in a sorted order");
             intersectionObjectURIs = iterators.stream()
-                    .map(ReducedOutputIterator::getCurrentObjectUrisSet)
+                    .map(ErrOutputIterator::getCurrentObjectUrisSet)
                     .reduce((a, b) -> {
                         a.retainAll(b);
                         return a;

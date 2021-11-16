@@ -81,7 +81,7 @@ public class PivotCoefs {
                 datasetData.pivotFilePath, datasetData.objectClass, datasetData.pivotCount);
         AbstractObjectIterator<? extends LocalAbstractObject> objectIter = Utility.getObjectsIterator(
                 datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
-        AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(11256, true);
+        AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(11000 + datasetData.pivotCount, true);
         pivots.forEach(pivot -> objects.removeIf(object -> object.getLocatorURI().equals(pivot.getLocatorURI()))); // To avoid having pivot as an object
         List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
         queries.forEach(query -> objects.removeIf(object -> object.getLocatorURI().equals(query.getLocatorURI()))); // To avoid having query as an object
@@ -125,6 +125,18 @@ public class PivotCoefs {
                     float b = Math.max(objectToPivotDist, queryToPivotDist);
                     float c = objectToPivotDist;
                     float coef = c / (b - a);
+                    if (coef < 1) {
+                        LOG.info("ObjectToPivotDist " + objectToPivotDist + ", queryToPivotDist " + queryToPivotDist + ", a " + a + ", b " + b + ", c " + c);
+                        LocalAbstractObject o = filteredObjects.stream()
+                                .filter(object -> object.getLocatorURI().equals(objectURItoMapQueryURItoDistEntry.getKey()))
+                                .findFirst().get();
+                        LocalAbstractObject q = filteredQueries.stream()
+                                .filter(query -> query.getLocatorURI().equals(queryURItoDist.getKey()))
+                                .findFirst().get();
+                        LOG.info("Object URI " + o.getLocatorURI() + ", queryURI " + q.getLocatorURI() + ", pivotURI " + pivot.getLocatorURI());
+                        assert (o.getDistance(pivot) == objectToPivotDist);
+                        assert (q.getDistance(pivot) == queryToPivotDist);
+                    }
                     coefForP = Math.min(coef, coefForP);
                 }
             }

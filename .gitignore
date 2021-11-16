@@ -3,3 +3,7 @@ target/
 src/main/java/bp/storedAlgos/
 src/main/java/bp/results/
 src/main/java/bp/errorOutputs
+src/main/java/bp/synergy
+src/main/java/bp/computedPivotCoefs
+src/main/java/bp/reducedOutput
+src/main/java/bp/Main.java~

@@ -25,7 +25,6 @@ public class ErrOutputIterator {
 
         do {
             String line = reader.readLine();
-            LOG.info(line);
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
         } while (!queryObjectUriMatcher.matches());
         nextQueryUri = queryObjectUriMatcher.group(1);

@@ -20,6 +20,7 @@ import mtree.MTree;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -30,7 +31,324 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-        restoreAndExecuteQueriesLaesaWithLimitedAnglesRandom();
+
+//        new PivotCoefs(new RandomData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Random.csv");
+//        new PivotCoefs(new SiftData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Sift.csv");
+//        new PivotCoefs(new MpegData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Mpeg.csv");
+//        new PivotCoefs(new DecafData()).computePivotCoefs("src/main/java/bp/computedPivotCoefs/Decaf.csv");
+
+        LOG.info("Creating LaesaMindexRandom.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMindexRandom.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz"});
+        LOG.info("Creating LaesaMindexSift.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMindexSift.csv.gz", new SiftData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Sift.txt.gz",
+                        "src/main/java/bp/reducedOutput/mindex/Sift.txt.gz"});
+        LOG.info("Creating LaesaMindexMpeg.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMindexMpeg.csv.gz", new MpegData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
+                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz"});
+        LOG.info("Creating LaesaMindexDecaf.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMindexDecaf.csv.gz", new DecafData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz",
+                        "src/main/java/bp/reducedOutput/mindex/Decaf.txt.gz"});
+
+
+//        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesaLimAngles/Sift.txt.gz"));
+//        System.setErr(new PrintStream(stream));
+//        restoreAndExecuteQueriesLaesaWithLimitedAnglesSift();
+//        stream.flush();
+//        stream.close();
+//
+//        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz"));
+//        System.setErr(new PrintStream(stream));
+//        restoreAndExecuteQueriesLaesaWithLimitedAnglesMpeg();
+//        stream.flush();
+//        stream.close();
+//
+//        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesaLimAngles/Decaf.txt.gz"));
+//        System.setErr(new PrintStream(stream));
+//        restoreAndExecuteQueriesLaesaWithLimitedAnglesDecaf();
+//        stream.flush();
+//        stream.close();
+//
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz", new RandomData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesaLimAngles/Random.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesaLimAngles/Sift.txt.gz", new SiftData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesaLimAngles/Sift.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesaLimAngles/Mpeg.txt.gz", new MpegData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/laesaLimAngles/Decaf.txt.gz", new DecafData())
+//                .reduceErrOutputFilesToMedianDistComp("src/main/java/bp/errorOutputs/laesaLimAngles/Decaf.txt.gz");
+//        LOG.info("Creating LaesaLaesaLimAnglesRandom.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesRandom.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz"});
+//        LOG.info("Creating MtreeLaesaLimAnglesRandom.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeLaesaLimAnglesRandom.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz"});
+//        LOG.info("Creating MindexLaesaLimAnglesRandom.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexLaesaLimAnglesRandom.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz"});
+
+
+//        LOG.info("Creating LaesaLaesaLimAnglesSift.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesSift.csv.gz", new SiftData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Sift.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Sift.txt.gz"});
+//        LOG.info("Creating MtreeLaesaLimAnglesSift.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeLaesaLimAnglesSift.csv.gz", new SiftData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Sift.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Sift.txt.gz"});
+//        LOG.info("Creating MindexLaesaLimAnglesSift.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexLaesaLimAnglesSift.csv.gz", new SiftData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Sift.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Sift.txt.gz"});
+
+//        LOG.info("Creating LaesaLaesaLimAnglesMpeg.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesMpeg.csv.gz", new MpegData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Mpeg.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Mpeg.txt.gz"});
+
+//        LOG.info("Creating MtreeLaesaLimAnglesMpeg.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeLaesaLimAnglesMpeg.csv.gz", new MpegData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Mpeg.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Mpeg.txt.gz"});
+//        LOG.info("Creating MindexLaesaLimAnglesMpeg.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexLaesaLimAnglesMpeg.csv.gz", new MpegData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Mpeg.txt.gz"});
+
+//        LOG.info("Creating LaesaLaesaLimAnglesDecaf.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesDecaf.csv.gz", new DecafData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Decaf.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Decaf.txt.gz"});
+//        LOG.info("Creating MindexLaesaLimAnglesDecaf.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexLaesaLimAnglesDecaf.csv.gz", new DecafData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Decaf.txt.gz",
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Decaf.txt.gz"});
+
+        LOG.info("Creating MtreeLaesaLimAnglesDecaf.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeLaesaLimAnglesDecaf.csv.gz", new DecafData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Decaf.txt.gz",
+                        "src/main/java/bp/reducedOutput/laesaLimAngles/Decaf.txt.gz"});
+
+        LOG.info("Creating MtreeMtreeDecaf.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeDecaf.csv.gz", new DecafData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Decaf.txt.gz",
+                        "src/main/java/bp/reducedOutput/mtree/Decaf.txt.gz"});
+
+//        LOG.info("Creating MtreeMtreeRandom.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeRandom.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz"});
+//
+//        LOG.info("Creating MtreeMtreeSift.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeSift.csv.gz", new SiftData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Sift.txt.gz",
+//                        "src/main/java/bp/reducedOutput/mtree/Sift.txt.gz"});
+//
+//        LOG.info("Creating MtreeMtreeMpeg.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeMpeg.csv.gz", new MpegData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Mpeg.txt.gz",
+//                        "src/main/java/bp/reducedOutput/mtree/Mpeg.txt.gz"});
+
+
+//        LOG.info("Creating LaesaGHP_50_128Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_128Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz"});
+//        LOG.info("Creating LaesaGHP_50_192Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_192Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_192.txt.gz"});
+//        LOG.info("Creating LaesaGHP_50_256Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_256Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_256.txt.gz"});
+//        LOG.info("Creating LaesaGHP_50_64Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_64Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_64.txt.gz"});
+//
+//
+//        LOG.info("Creating MtreeGHP_50_128Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_128Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz"});
+//        LOG.info("Creating MtreeGHP_50_192Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_192Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_192.txt.gz"});
+//        LOG.info("Creating MtreeGHP_50_256Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_256Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_256.txt.gz"});
+//        LOG.info("Creating MtreeGHP_50_64Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_64Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_64.txt.gz"});
+//
+//        LOG.info("Creating MindexGHP_50_128Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_128Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz"});
+//        LOG.info("Creating MindexGHP_50_192Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_192Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_192.txt.gz"});
+//        LOG.info("Creating MindexGHP_50_256Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_256Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_256.txt.gz"});
+//        LOG.info("Creating MindexGHP_50_64Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_64Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_64.txt.gz"});
+//
+//        LOG.info("Creating LaesaLimAnglesGHP_50_128Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_128Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz"});
+//        LOG.info("Creating LaesaLimAnglesGHP_50_192Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_192Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_192.txt.gz"});
+//        LOG.info("Creating LaesaLimAnglesGHP_50_256Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_256Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_256.txt.gz"});
+//        LOG.info("Creating LaesaLimAnglesGHP_50_64Random.csv.gz");
+//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_64Random.csv.gz", new RandomData())
+//                .evaluateSynergyEffectiveness(new String[]{
+//                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+//                        "src/main/java/bp/reducedOutput/sketches/random/GHP_50_64.txt.gz"});
+
+
+        LOG.info("Creating LaesaGHP_80_128Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_128Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz"});
+        LOG.info("Creating LaesaGHP_80_192Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_192Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz"});
+        LOG.info("Creating LaesaGHP_80_256Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_256Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz"});
+        LOG.info("Creating LaesaGHP_80_64Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_64Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesa/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
+
+
+        LOG.info("Creating MtreeGHP_80_128Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_128Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz"});
+        LOG.info("Creating MtreeGHP_80_192Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_192Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz"});
+        LOG.info("Creating MtreeGHP_80_256Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_256Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz"});
+        LOG.info("Creating MtreeGHP_80_64Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_64Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mtree/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
+
+
+        LOG.info("Creating MindexGHP_80_128Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_128Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz"});
+        LOG.info("Creating MindexGHP_80_192Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_192Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz"});
+        LOG.info("Creating MindexGHP_80_256Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_256Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz"});
+        LOG.info("Creating MindexGHP_80_64Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_64Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
+
+
+        LOG.info("Creating LaesaLimAnglesGHP_80_128Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_128Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz"});
+        LOG.info("Creating LaesaLimAnglesGHP_80_192Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_192Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz"});
+        LOG.info("Creating LaesaLimAnglesGHP_80_256Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_256Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz"});
+        LOG.info("Creating LaesaLimAnglesGHP_80_64Random.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_64Random.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
+                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
 
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz", new RandomData())
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/random/GHP_50_128.data.gz");
@@ -76,7 +394,7 @@ public class Main {
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_256.data.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz", new MpegData())
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_50_64.data.gz");
-//
+////
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz", new MpegData())
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/mpeg7/GHP_80_128.data.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz", new MpegData())
@@ -94,7 +412,7 @@ public class Main {
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_256.data.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_50_64.txt.gz", new DecafData())
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_50_64.data.gz");
-//
+////
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_128.txt.gz", new DecafData())
 //                .reduceErrOutputFilesToMedianDistComp("/home/xmic/2021_BP_Iluliia/err_output_knnSearchOnSketches/decaf/GHP_80_128.data.gz");
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/decaf/GHP_80_192.txt.gz", new DecafData())

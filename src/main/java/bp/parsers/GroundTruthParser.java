@@ -1,5 +1,10 @@
 package bp.parsers;
 
+import bp.datasets.DecafData;
+import bp.datasets.MpegData;
+import bp.datasets.RandomData;
+import bp.datasets.SiftData;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,29 +31,25 @@ public class GroundTruthParser {
 
         Pattern queryObjectUriPattern = Pattern.compile(queryUriPattern);
         Matcher queryObjectUriMatcher;
-        Pattern dataObjectUriPattern = Pattern.compile("\\d+\\.\\d+: .*");
-        Matcher dataObjectUriMatcher;
 
-        String lastQueryUri = null;
+        String lastQueryUri;
         String line = reader.readLine();
         while (line != null) {
             queryObjectUriMatcher = queryObjectUriPattern.matcher(line);
-            if (queryObjectUriMatcher.matches()) {
-                lastQueryUri = queryObjectUriMatcher.group(1);
-                result.put(queryObjectUriMatcher.group(1), new HashSet<>());
+            if (!queryObjectUriMatcher.matches()) {
+                line = reader.readLine();
+                continue;
             }
-            dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
-            if (dataObjectUriMatcher.matches()) {
-                List<String> neighbours = Arrays.stream(dataObjectUriMatcher.group()
-                        .replaceAll(" ?\\d+\\.\\d+: ", "")
-                        .split(","))
-                        .limit(30)
-                        .collect(Collectors.toList());
-                result.get(lastQueryUri).addAll(neighbours);
-            }
+            lastQueryUri = queryObjectUriMatcher.group(1);
+            line = reader.readLine();
+            String finalLastQueryUri = lastQueryUri;
+            result.put(queryObjectUriMatcher.group(1),
+                    Arrays.stream(line.replaceAll(" ?[^:,]*: ", "").split(","))
+                            .filter(str -> !str.equals(finalLastQueryUri))
+                            .limit(30)
+                            .collect(Collectors.toSet()));
             line = reader.readLine();
         }
         return result;
-
     }
 }

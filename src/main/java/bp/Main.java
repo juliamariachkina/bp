@@ -58,6 +58,27 @@ public class Main {
                         "src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz",
                         "src/main/java/bp/reducedOutput/mindex/Decaf.txt.gz"});
 
+        LOG.info("Creating LaesaLaesaLimAnglesRandom.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesRandom.csv.gz", new RandomData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Random.txt.gz",
+                        "src/main/java/bp/errorOutputs/laesaLimAngles/Random.txt.gz"});
+        LOG.info("Creating LaesaLaesaLimAnglesSift.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesSift.csv.gz", new SiftData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Sift.txt.gz",
+                        "src/main/java/bp/errorOutputs/laesaLimAngles/Sift.txt.gz"});
+        LOG.info("Creating LaesaLaesaLimAnglesMpeg.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesMpeg.csv.gz", new MpegData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
+                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz"});
+        LOG.info("Creating LaesaLaesaLimAnglesDecaf.csv.gz");
+        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesDecaf.csv.gz", new DecafData())
+                .evaluateSynergyEffectiveness(new String[]{
+                        "src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz",
+                        "src/main/java/bp/errorOutputs/laesaLimAngles/Decaf.txt.gz"});
+
 
 //        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesaLimAngles/Sift.txt.gz"));
 //        System.setErr(new PrintStream(stream));
@@ -326,28 +347,6 @@ public class Main {
         new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_64Random.csv.gz", new RandomData())
                 .evaluateSynergyEffectiveness(new String[]{
                         "src/main/java/bp/reducedOutput/mindex/Random.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
-
-
-        LOG.info("Creating LaesaLimAnglesGHP_80_128Random.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_128Random.csv.gz", new RandomData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_128.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_192Random.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_192Random.csv.gz", new RandomData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_192.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_256Random.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_256Random.csv.gz", new RandomData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/random/GHP_80_256.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_64Random.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_64Random.csv.gz", new RandomData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/laesaLimAngles/Random.txt.gz",
                         "src/main/java/bp/reducedOutput/sketches/random/GHP_80_64.txt.gz"});
 
 //        new SynergyEffectivenessEvaluator("src/main/java/bp/reducedOutput/sketches/random/GHP_50_128.txt.gz", new RandomData())

@@ -45,7 +45,6 @@ public class GroundTruthParser {
             String finalLastQueryUri = lastQueryUri;
             result.put(queryObjectUriMatcher.group(1),
                     Arrays.stream(line.replaceAll(" ?[^:,]*: ", "").split(","))
-                            .filter(str -> !str.equals(finalLastQueryUri))
                             .limit(30)
                             .collect(Collectors.toSet()));
             line = reader.readLine();

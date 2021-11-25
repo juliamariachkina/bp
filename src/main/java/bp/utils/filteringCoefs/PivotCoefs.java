@@ -82,9 +82,9 @@ public class PivotCoefs {
         AbstractObjectIterator<? extends LocalAbstractObject> objectIter = Utility.getObjectsIterator(
                 datasetData.dataFilePath, datasetData.objectClass); // Dataset objects file contains all: objects, queries and pivots
         AbstractObjectList<? extends LocalAbstractObject> objects = objectIter.getRandomObjects(11000 + datasetData.pivotCount, true);
-        pivots.forEach(pivot -> objects.removeIf(object -> object.getLocatorURI().equals(pivot.getLocatorURI()))); // To avoid having pivot as an object
+        pivots.forEach(pivot -> objects.removeIf(object -> object.dataEquals(pivot) || object.getLocatorURI().equals(pivot.getLocatorURI()))); // To avoid having pivot as an object
         List<? extends LocalAbstractObject> queries = objects.provideObjects().getRandomObjects(1000, true);
-        queries.forEach(query -> objects.removeIf(object -> object.getLocatorURI().equals(query.getLocatorURI()))); // To avoid having query as an object
+        queries.forEach(query -> objects.removeIf(object -> object.dataEquals(query) || object.getLocatorURI().equals(query.getLocatorURI()))); // To avoid having query as an object
         List<? extends LocalAbstractObject> objectsList = objects.stream().limit(10000).collect(Collectors.toList());
 
 
@@ -123,9 +123,9 @@ public class PivotCoefs {
                         throw new IllegalArgumentException("Object URI equals query URI for " + queryURItoDist.getKey());
                     float a = Math.min(objectToPivotDist, queryToPivotDist);
                     float b = Math.max(objectToPivotDist, queryToPivotDist);
-                    float c = objectToPivotDist;
+                    float c = objectToQueryDist;
                     float coef = c / (b - a);
-                    if (coef < 1) {
+                    if (c == 0 || a == 0 || b == 0) {
                         LOG.info("ObjectToPivotDist " + objectToPivotDist + ", queryToPivotDist " + queryToPivotDist + ", a " + a + ", b " + b + ", c " + c);
                         LocalAbstractObject o = filteredObjects.stream()
                                 .filter(object -> object.getLocatorURI().equals(objectURItoMapQueryURItoDistEntry.getKey()))
@@ -136,6 +136,9 @@ public class PivotCoefs {
                         LOG.info("Object URI " + o.getLocatorURI() + ", queryURI " + q.getLocatorURI() + ", pivotURI " + pivot.getLocatorURI());
                         assert (o.getDistance(pivot) == objectToPivotDist);
                         assert (q.getDistance(pivot) == queryToPivotDist);
+                        assert (q.getDistance(o) == objectToQueryDist);
+                        throw new IllegalArgumentException("Distances in the triangles can't be 0, but they are for pivot "
+                                + pivot.getLocatorURI() + " query " + q.getLocatorURI() + " object " + o.getLocatorURI());
                     }
                     coefForP = Math.min(coef, coefForP);
                 }

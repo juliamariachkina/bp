@@ -9,7 +9,7 @@ public class MpegData extends DatasetData {
         super(MetaObjectSAPIRWeightedDist2.class, MemoryStorageBucket.class, "../mpeg/pivots_2560", 512,
                 "../mpeg/query_1000", 1000, "../mpeg/data_1M.gz", 1000000,
                 "../mpeg/groundtruth_q1000",
-                "INFO: Algorithm processed: KNNQueryOperation <MetaObjectSAPIRWeightedDist3 \\((\\d+)\\).*",
+                "INFO: Algorithm processed: KNNQueryOperation <MetaObjectSAPIRWeightedDist2 \\((\\d+)\\).*",
                 "src/main/java/bp/computedPivotCoefs/Mpeg.csv");
     }
 }

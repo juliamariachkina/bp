@@ -36,13 +36,24 @@ public class CSVWriter {
         writer.flush();
     }
 
+    public static void writeNextQueryCandSetDiffs(PrintWriter writer, String queryURI, Set<String> filteredObjectURIs,
+                                                  long[] candSetDiffs, int index) {
+        writer.println("IDquery;" + queryURI);
+        writer.println("CandSet reduction;" + filteredObjectURIs.size());
+        candSetDiffs[index] = filteredObjectURIs.size();
+    }
+
     public static void writeNextQuerySynergyEffectiveness(PrintWriter writer, Set<String> groundTruth,
-                                                          String queryURI, Set<String> intersectionObjectURIs) {
+                                                          String queryURI, Set<String> intersectionObjectURIs,
+                                                          long[] candSetSizes, int[] recalls, int index) {
         groundTruth.retainAll(intersectionObjectURIs);
 
         writer.println("IDquery;" + queryURI);
         intersectionObjectURIs.forEach(writer::println);
+        writer.println("CandSet size;" + intersectionObjectURIs.size());
         writer.println("Recall;" + groundTruth.size());
+        candSetSizes[index] = intersectionObjectURIs.size();
+        recalls[index] = groundTruth.size();
     }
 
     public static void writeReducedErrOutput(String errFilePath, int limit, String resultFilePath) throws IOException {

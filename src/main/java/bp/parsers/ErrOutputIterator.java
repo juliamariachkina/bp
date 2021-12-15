@@ -2,11 +2,17 @@ package bp.parsers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A generic class that parses error outputs produced during query evaluations.
+ */
 public class ErrOutputIterator {
     private static final Logger LOG = Logger.getLogger(ErrOutputIterator.class.getName());
 
@@ -30,14 +36,23 @@ public class ErrOutputIterator {
         nextQueryUri = queryObjectUriMatcher.group(1);
     }
 
+    /**
+     * @return currently processed query URI
+     */
     public String getCurrentQueryURI() {
         return currentQueryUri;
     }
 
+    /**
+     * @return list of object URIs to which the distances from the currentQueryUri were evaluated
+     */
     public List<String> getCurrentObjectUrisList() {
         return currentObjectUris;
     }
 
+    /**
+     * @return ordered set of object URIs to which the distances form the currentQueryUri were evaluated
+     */
     public Set<String> getCurrentObjectUrisSet() {
         return new TreeSet<>(currentObjectUris);
     }
@@ -46,6 +61,12 @@ public class ErrOutputIterator {
         return nextQueryUri != null;
     }
 
+    /**
+     * Parses the error output created during query evaluation. Reads all objects to which distances from the last
+     * parsed query object were evaluated.
+     *
+     * @throws IOException propagates the exception
+     */
     public void parseNextQueryEvalErrOutput() throws IOException {
         if (nextQueryUri == null)
             return;
@@ -60,7 +81,8 @@ public class ErrOutputIterator {
             }
             Matcher dataObjectUriMatcher = dataObjectUriPattern.matcher(line);
             if (dataObjectUriMatcher.matches()) {
-                currentObjectUris.add(dataObjectUriMatcher.group(1).equals(currentQueryUri) && dataObjectUriMatcher.groupCount() > 1 ?
+                currentObjectUris.add(dataObjectUriMatcher.group(1).equals(currentQueryUri)
+                        && dataObjectUriMatcher.groupCount() > 1 ?
                         dataObjectUriMatcher.group(2) :
                         dataObjectUriMatcher.group(1));
             }

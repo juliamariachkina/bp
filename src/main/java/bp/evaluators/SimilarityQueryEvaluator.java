@@ -1,6 +1,7 @@
 package bp.evaluators;
 
 import bp.CSVWriter;
+import bp.datasets.DatasetData;
 import bp.utils.Utility;
 import messif.algorithms.Algorithm;
 import messif.algorithms.AlgorithmMethodException;
@@ -20,31 +21,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * SimpleQueryEvaluator evaluates m queries on n objects using kNNQueryOperation. All the parameters
- * (including m, n, k, specific algorithm, etc.) are provided in the constructor.
+ * SimilarityQueryEvaluator inserts objects to the algorithm and evaluates kNN queries (precise or approximate) on
+ * the algorithm.
  *
- * @param <T> Any class that extends LocalAbstractObject can be used for
- *           representation of similarity query and data objects in this class
+ * @param <T> Any class that extends LocalAbstractObject can be used for a
+ *            representation of a query, data and pivot objects in this class
  */
 public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
 
     private final Algorithm algorithm;
     private final int k;
-    private final String dataFilePath;
-    private final int dataObjectsCount;
-    private final Class<T> dataClass;
-    private final List<T> queryObjects;
+    private final DatasetData datasetData;
+    private final List<? extends LocalAbstractObject> queryObjects;
 
     private static final Logger LOG = Logger.getLogger(SimilarityQueryEvaluator.class.getName());
 
-    public SimilarityQueryEvaluator(Algorithm algorithm, String queryFilePath, int queryCount,
-                                int k, String dataFilePath, int dataObjectsCount, Class<T> dataClass) {
-        this.dataClass = dataClass;
-        queryObjects = Utility.getObjectsList(queryFilePath, dataClass, queryCount);
+    /**
+     * Creates a new SimilarityQueryEvaluator instance.
+     * @param algorithm an algorithm to be used for all similarity related operations by this SimilarityQueryEvaluator
+     * @param k parameter k for KNNQueryOperation or ApproxKNNQueryOperation
+     * @param datasetData metadata of a specific dataset
+     */
+    public SimilarityQueryEvaluator(Algorithm algorithm, int k, DatasetData datasetData) {
+        queryObjects = Utility.getObjectsList(datasetData.queryFilePath, datasetData.objectClass, datasetData.queryCount);
         this.algorithm = algorithm;
         this.k = k;
-        this.dataFilePath = dataFilePath;
-        this.dataObjectsCount = dataObjectsCount;
+        this.datasetData = datasetData;
     }
 
     public void storeToFile(String path) throws IOException {
@@ -54,15 +56,16 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
     public void insertData() {
         try {
             algorithm.executeOperation(new BulkInsertOperation(
-                    Utility.getObjectsIterator(dataFilePath, dataClass),
-                    dataObjectsCount));
+                    Utility.getObjectsIterator(datasetData.dataFilePath, datasetData.objectClass),
+                    datasetData.dataObjectsCount));
         } catch (AlgorithmMethodException | NoSuchMethodException e) {
-            LOG.log(Level.SEVERE, "Reading objects ended with a failure: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            LOG.log(Level.SEVERE, "Reading objects ended with a failure: " + e.getMessage() + "\n"
+                    + Arrays.toString(e.getStackTrace()));
         }
     }
 
-    public void evaluateQueriesAndWriteResult(String filePathToResults, String groundTruthPath, String queryPattern, boolean isApproxOp)
-            throws IOException {
+    public void evaluateQueriesAndWriteResult(String filePathToResults, String groundTruthPath, String queryPattern,
+                                              boolean isApproxOp) throws IOException {
         Map<String, Long> locatorToDistComp = new HashMap<>();
         Map<String, List<RankedAbstractObject>> result = evaluateQueries(locatorToDistComp, isApproxOp);
 
@@ -84,11 +87,13 @@ public class SimilarityQueryEvaluator<T extends LocalAbstractObject> {
 
                 result.put(queryObject.getLocatorURI(), new ArrayList<>());
                 op.getAnswer().forEachRemaining(result.get(queryObject.getLocatorURI())::add);
-                locatorToDistComp.put(queryObject.getLocatorURI(), StatisticCounter.getStatistics("DistanceComputations").getValue());
+                locatorToDistComp.put(queryObject.getLocatorURI(),
+                        StatisticCounter.getStatistics("DistanceComputations").getValue());
                 LOG.log(Level.INFO, "Distance computations: " + StatisticCounter.getStatistics("DistanceComputations"));
             }
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Query evaluation ended with a failure: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
+            LOG.log(Level.WARNING, "Query evaluation ended with a failure: " + e.getMessage()
+                    + Arrays.toString(e.getStackTrace()));
         }
         return result;
     }

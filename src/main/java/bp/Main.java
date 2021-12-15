@@ -2,296 +2,43 @@ package bp;
 
 import bp.datasets.*;
 import bp.evaluators.SimilarityQueryEvaluator;
-import bp.evaluators.SynergyEffectivenessEvaluator;
 import bp.indexes.LimitedAnglesMetricFiltering;
 import bp.utils.Utility;
-import bp.utils.filteringCoefs.PivotCoefs;
 import messif.algorithms.Algorithm;
 import messif.algorithms.AlgorithmMethodException;
-import messif.algorithms.impl.ParallelSequentialScan;
 import messif.algorithms.impl.SequentialScan;
 import messif.buckets.CapacityFullException;
 import messif.objects.LocalAbstractObject;
-import messif.objects.impl.ObjectFloatVectorL2;
 import messif.objects.util.AbstractObjectIterator;
-import messif.operations.data.InsertOperation;
 import mindex.algorithms.MIndexAlgorithm;
 import mtree.MTree;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
-    public static void main(String[] args) throws IOException, CapacityFullException, AlgorithmMethodException, InstantiationException, ClassNotFoundException {
-
-//
-//
-//        LOG.info("Creating LaesaLaesaMpeg.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaMpeg.csv.gz", new MpegData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-//                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz"});
-//        LOG.info("Creating LaesaLaesaRandom.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaRandom.csv.gz", new RandomData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/laesa/Random.txt.gz",
-//                        "src/main/java/bp/errorOutputs/laesa/Random.txt.gz"});
-//        LOG.info("Creating LaesaLaesaDecaf.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaDecaf.csv.gz", new DecafData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz",
-//                        "src/main/java/bp/errorOutputs/laesa/Decaf.txt.gz"});
-//        LOG.info("Creating LaesaLaesaSift.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaSift.csv.gz", new SiftData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/laesa/Sift.txt.gz",
-//                        "src/main/java/bp/errorOutputs/laesa/Sift.txt.gz"});
-        //28
-
-
-//        LOG.info("Creating MtreeMtreeMpeg.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeMpeg.csv.gz", new MpegData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-//                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz"});
-//        LOG.info("Creating MtreeMtreeRandom.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeRandom.csv.gz", new RandomData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/mtree/Random.txt.gz",
-//                        "src/main/java/bp/errorOutputs/mtree/Random.txt.gz"});
-//        LOG.info("Creating MtreeMtreeDecaf.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeDecaf.csv.gz", new DecafData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/mtree/Decaf.txt.gz",
-//                        "src/main/java/bp/errorOutputs/mtree/Decaf.txt.gz"});
-//        LOG.info("Creating MtreeMtreeSift.csv.gz");
-//        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMtreeSift.csv.gz", new SiftData())
-//                .evaluateSynergyEffectiveness(new String[]{
-//                        "src/main/java/bp/errorOutputs/mtree/Sift.txt.gz",
-//                        "src/main/java/bp/errorOutputs/mtree/Sift.txt.gz"});
-//        LOG.info("Mtree");
-
-
-        LOG.info("Creating LaesaMindexMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMindexMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz"});
-
-
-        LOG.info("Creating LaesaMtreeMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaMtreeMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz"});
-
-        LOG.info("Creating LaesaGHP_50_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_128.txt.gz"});
-        LOG.info("Creating LaesaGHP_50_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_192.txt.gz"});
-        LOG.info("Creating LaesaGHP_50_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_256.txt.gz"});
-        LOG.info("Creating LaesaGHP_50_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_50_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz"});
-        LOG.info("Creating LaesaGHP_80_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz"});
-        LOG.info("Creating LaesaGHP_80_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz"});
-        LOG.info("Creating LaesaGHP_80_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_256.txt.gz"});
-        LOG.info("Creating LaesaGHP_80_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaGHP_80_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_64.txt.gz"});
-
-        LOG.info("Creating LaesaLaesaLimAnglesMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLaesaLimAnglesMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesa/Mpeg.txt.gz",
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz"});
-        LOG.info("Laesa with everything");
-
-
-        LOG.info("Creating MtreeMindexMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeMindexMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz"});
-
-
-        LOG.info("Creating MtreeGHP_50_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_128.txt.gz"});
-        LOG.info("Creating MtreeGHP_50_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_192.txt.gz"});
-        LOG.info("Creating MtreeGHP_50_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_256.txt.gz"});
-        LOG.info("Creating MtreeGHP_50_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_50_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz"});
-        LOG.info("Creating MtreeGHP_80_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz"});
-        LOG.info("Creating MtreeGHP_80_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz"});
-        LOG.info("Creating MtreeGHP_80_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_256.txt.gz"});
-        LOG.info("Creating MtreeGHP_80_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeGHP_80_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_64.txt.gz"});
-
-
-        LOG.info("Creating MtreeLaesaLimAnglesMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MtreeLaesaLimAnglesMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/mtree/Mpeg.txt.gz",
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz"});
-        LOG.info("Mtree");
-
-
-        LOG.info("Creating MindexGHP_50_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_128.txt.gz"});
-        LOG.info("Creating MindexGHP_50_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_192.txt.gz"});
-        LOG.info("Creating MindexGHP_50_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_256.txt.gz"});
-        LOG.info("Creating MindexGHP_50_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_50_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz"});
-        LOG.info("Creating MindexGHP_80_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz"});
-        LOG.info("Creating MindexGHP_80_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz"});
-        LOG.info("Creating MindexGHP_80_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_256.txt.gz"});
-        LOG.info("Creating MindexGHP_80_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexGHP_80_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_64.txt.gz"});
-
-
-        LOG.info("Creating MindexLaesaLimAnglesMpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/MindexLaesaLimAnglesMpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/reducedOutput/mindex/Mpeg.txt.gz",
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz"});
-
-
-        LOG.info("Creating LaesaLimAnglesGHP_50_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_128.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_50_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_192.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_50_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_256.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_50_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_50_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_50_64.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_128Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_128Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_128.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_192Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_192Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_192.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_256Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_256Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_256.txt.gz"});
-        LOG.info("Creating LaesaLimAnglesGHP_80_64Mpeg.csv.gz");
-        new SynergyEffectivenessEvaluator("src/main/java/bp/synergy/LaesaLimAnglesGHP_80_64Mpeg.csv.gz", new MpegData())
-                .evaluateSynergyEffectiveness(new String[]{
-                        "src/main/java/bp/errorOutputs/laesaLimAngles/Mpeg.txt.gz",
-                        "src/main/java/bp/reducedOutput/sketches/mpeg/GHP_80_64.txt.gz"});
-
-
+    public static void main(String[] args) {
     }
 
+    /**
+     * Creates a new instance of a filtering technique (algorithm), inserts all data objects from the dataset
+     * and stores it to the algorithm to the file at the filePathToStoreAlgo.
+     *
+     * @param datasetData         metadata of a specific dataset
+     * @param algorithmClass      class of an algorithm to initialise
+     * @param k                   parameter of the kNN queries
+     * @param filePathToStoreAlgo filepath where to store the algorithm
+     * @throws CapacityFullException    propagates the exception
+     * @throws InstantiationException   propagates the exception
+     * @throws IOException              propagates the exception
+     * @throws AlgorithmMethodException propagates the exception
+     */
     public static void createAndStoreAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,
                                                int k, String filePathToStoreAlgo)
             throws CapacityFullException, InstantiationException, IOException, AlgorithmMethodException {
@@ -302,9 +49,8 @@ public class Main {
         Algorithm algorithm = createAlgorithm(datasetData, algorithmClass, pivotIter);
         LOG.log(Level.INFO, "Algorithm initialised");
 
-        SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
-                algorithm, datasetData.queryFilePath, datasetData.queryCount, k,
-                datasetData.dataFilePath, datasetData.dataObjectsCount, datasetData.objectClass);
+        SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator =
+                new SimilarityQueryEvaluator<>(algorithm, k, datasetData);
         similarityQueryEvaluator.insertData();
         LOG.log(Level.INFO, "Data objects inserted");
 
@@ -312,6 +58,18 @@ public class Main {
         LOG.log(Level.INFO, "Algorithm stored to a file");
     }
 
+    /**
+     * Creates an instance of an algorithm according to the parameters.
+     *
+     * @param datasetData    metadata of a specific dataset
+     * @param algorithmClass class of an algorithm to initialise
+     * @param pivotIter      iterator of dataset pivots (used by the algorithm)
+     * @return a new algorithm instance
+     * @throws CapacityFullException    propagates the exception
+     * @throws InstantiationException   propagates the exception
+     * @throws AlgorithmMethodException propagates the exception
+     * @throws IOException              propagates the exception
+     */
     private static Algorithm createAlgorithm(DatasetData datasetData, Class<? extends Algorithm> algorithmClass,
                                              AbstractObjectIterator<LocalAbstractObject> pivotIter)
             throws CapacityFullException, InstantiationException, AlgorithmMethodException, IOException {
@@ -360,6 +118,8 @@ public class Main {
 
         return new MIndexAlgorithm(props, "mindex.");
     }
+
+    // Below are the methods that I used in my experiments to create the algorithms
 
     /*------------------------------------------------LAESA---------------------------------------------------------*/
 
@@ -440,30 +200,59 @@ public class Main {
         createAndStoreAlgorithm(new MpegData(), LimitedAnglesMetricFiltering.class, 30,
                 "src/main/java/bp/storedAlgos/laesaLimAngles/Mpeg");
     }
+    /*--------------------------------------------------------------------------------------------------------------*/
 
-    public static <T extends LocalAbstractObject> void restoreAndExecuteQueries(DatasetData datasetData, int k,
-                                                                                String algoFilePath,
-                                                                                String filePathToStoreResults,
-                                                                                boolean isApproxOp)
+    /**
+     * Restores an algorithm form the file, evaluates all queries, writes the results to the file
+     * at the filePathToStoreResults.
+     *
+     * @param datasetData            metadata of a specific dataset
+     * @param k                      parameter of the kNN queries
+     * @param algoFilePath           filepath to the file where the algorithm is stored
+     * @param filePathToStoreResults filepath to the file where to store the results
+     * @param isApproxOp             defines what type of queries to evaluate: precise or approximate
+     * @throws IOException            propagates the exception
+     * @throws ClassNotFoundException propagates the exception
+     */
+    public static void restoreAndExecuteQueries(DatasetData datasetData, int k, String algoFilePath,
+                                                String filePathToStoreResults, boolean isApproxOp)
             throws IOException, ClassNotFoundException {
-        SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
-                Algorithm.restoreFromFile(algoFilePath), datasetData.queryFilePath, datasetData.queryCount,
-                k, datasetData.dataFilePath, datasetData.dataObjectsCount, datasetData.objectClass);
+        SimilarityQueryEvaluator<? extends LocalAbstractObject> similarityQueryEvaluator =
+                new SimilarityQueryEvaluator<>(Algorithm.restoreFromFile(algoFilePath), k, datasetData);
 
         similarityQueryEvaluator.evaluateQueriesAndWriteResult(filePathToStoreResults, datasetData.groundTruthPath,
                 datasetData.queryPattern, isApproxOp);
     }
 
+    // Below are the methods that I used in my experiments to evaluate the queries
+
     /*------------------------------------------------LAESA---------------------------------------------------------*/
 
+    /**
+     * Restores and executes queries using the LAESA on the SIFT dtaaset. By redirecting the error output stream
+     * to a file we can store the error output produced during query processing. This is exactly how we get the
+     * candidate sets from query evaluations. We added a line of code to all distance functions that we use that writes
+     * to the error output the URIs of objects between which it computes the distance.
+     *
+     * @throws IOException            propagates the exception
+     * @throws ClassNotFoundException propagates the exception
+     */
     public static void restoreAndExecuteQueriesLaesaSift() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesa/Sift.txt.gz"));
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/laesa/Sift",
                 "src/main/java/bp/results/laesa/LaesaSift.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesLaesaRandom() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream(("src/main/java/bp/errorOutputs/laesa/Random.txt.gz"));
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/laesa/Random",
                 "src/main/java/bp/results/laesa/LaesaRandom.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesLaesaDecaf() throws IOException, ClassNotFoundException {
@@ -487,13 +276,21 @@ public class Main {
     /*------------------------------------------------M-tree---------------------------------------------------------*/
 
     public static void restoreAndExecuteQueriesMTreeSift() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream("src/main/java/bp/errorOutputs/mtree/Sift.txt.gz");
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/mtree/Sift",
                 "src/main/java/bp/results/mtree/MtreeSift.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesMTreeRandom() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream("src/main/java/bp/errorOutputs/mtree/Random.txt.gz");
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/mtree/Random",
                 "src/main/java/bp/results/mtree/MtreeRandom.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesMTreeDecaf() throws IOException, ClassNotFoundException {
@@ -517,13 +314,21 @@ public class Main {
     /*------------------------------------------------M-index---------------------------------------------------------*/
 
     public static void restoreAndExecuteQueriesMIndexSift() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream("src/main/java/bp/errorOutputs/mindex/Sift.txt.gz");
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new SiftData(), 30, "src/main/java/bp/storedAlgos/mindex/Sift",
                 "src/main/java/bp/results/mindex/MIndexSift.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesMIndexRandom() throws IOException, ClassNotFoundException {
+        OutputStream stream = Utility.getOutputStream("src/main/java/bp/errorOutputs/mindex/Random.txt.gz");
+        System.setErr(new PrintStream(stream));
         restoreAndExecuteQueries(new RandomData(), 30, "src/main/java/bp/storedAlgos/mindex/Random",
                 "src/main/java/bp/results/mindex/MIndexRandom.csv", false);
+        stream.flush();
+        stream.close();
     }
 
     public static void restoreAndExecuteQueriesMIndexDecaf() throws IOException, ClassNotFoundException {
@@ -580,19 +385,5 @@ public class Main {
                 "src/main/java/bp/results/laesaLimAngles/LaesaLimAnglesMpeg.csv", true);
         stream.flush();
         stream.close();
-    }
-
-    /*--------------------------------------------Sequential-scan------------------------------------------------------*/
-
-    public static void prepareAndExecuteSeqScan() throws IOException {
-        SimilarityQueryEvaluator<ObjectFloatVectorL2> similarityQueryEvaluator = new SimilarityQueryEvaluator<>(
-                new ParallelSequentialScan(4),
-                "../D20_query_objects_uniform_distribution.data",
-                10, 30, "../D20_data_objects_uniform_distribution.data",
-                100000, ObjectFloatVectorL2.class);
-        similarityQueryEvaluator.insertData();
-
-        similarityQueryEvaluator.evaluateQueriesAndWriteResult("src/main/java/bp/results/SeqScan.csv",
-                "add filepath", "add pattern", false);
     }
 }

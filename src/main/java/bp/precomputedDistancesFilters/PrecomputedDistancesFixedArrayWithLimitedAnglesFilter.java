@@ -1,17 +1,19 @@
 package bp.precomputedDistancesFilters;
 
 import messif.objects.LocalAbstractObject;
-import messif.objects.PrecomputedDistancesFilter;
 import messif.objects.PrecomputedDistancesFixedArrayFilter;
 import messif.objects.nio.BinaryInput;
 import messif.objects.nio.BinaryOutput;
 import messif.objects.nio.BinarySerializator;
-import messif.objects.util.AbstractObjectIterator;
 import messif.objects.util.AbstractObjectList;
 
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * This class computes and stores distances tightened by the application of computed pivot coefficients (if applicable).
+ * See the LimitedAnglesMetricFiltering class for more details.
+ */
 public class PrecomputedDistancesFixedArrayWithLimitedAnglesFilter extends PrecomputedDistancesFixedArrayFilter {
     private final Map<String, Float> pivotCoefs;
 
@@ -81,7 +83,8 @@ public class PrecomputedDistancesFixedArrayWithLimitedAnglesFilter extends Preco
         return this.actualSize;
     }
 
-    public synchronized float insertPrecompDist(int pos, LocalAbstractObject p, LocalAbstractObject o) throws IndexOutOfBoundsException {
+    public synchronized float insertPrecompDist(int pos, LocalAbstractObject p, LocalAbstractObject o)
+            throws IndexOutOfBoundsException {
         if (p != null && o != null) {
             float d = p.getDistance(o) * (
                     pivotCoefs.containsKey(p.getLocatorURI()) ?
@@ -113,7 +116,8 @@ public class PrecomputedDistancesFixedArrayWithLimitedAnglesFilter extends Preco
     }
 
     public Object clone() throws CloneNotSupportedException {
-        PrecomputedDistancesFixedArrayWithLimitedAnglesFilter rtv = (PrecomputedDistancesFixedArrayWithLimitedAnglesFilter) super.clone();
+        PrecomputedDistancesFixedArrayWithLimitedAnglesFilter rtv =
+                (PrecomputedDistancesFixedArrayWithLimitedAnglesFilter) super.clone();
         if (rtv.precompDist != null) {
             float[] origArray = rtv.precompDist;
             rtv.precompDist = new float[origArray.length];
@@ -123,7 +127,8 @@ public class PrecomputedDistancesFixedArrayWithLimitedAnglesFilter extends Preco
     }
 
     public int binarySerialize(BinaryOutput output, BinarySerializator serializator) throws IOException {
-        return super.binarySerialize(output, serializator) + serializator.write(output, actualSize) + serializator.write(output, precompDist);
+        return super.binarySerialize(output, serializator) + serializator.write(output, actualSize) +
+                serializator.write(output, precompDist);
     }
 
     public int getBinarySize(BinarySerializator serializator) {

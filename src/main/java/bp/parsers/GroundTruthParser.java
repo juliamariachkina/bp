@@ -1,21 +1,28 @@
 package bp.parsers;
 
-import bp.datasets.DecafData;
-import bp.datasets.MpegData;
-import bp.datasets.RandomData;
-import bp.datasets.SiftData;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * This class parses the ground truths of query objects.
+ */
 public class GroundTruthParser {
+    /**
+     * File path to the ground truth file
+     **/
     private final String filePath;
+    /**
+     * The pattern of query URI
+     **/
     private final String queryUriPattern;
 
     private static final Logger LOG = Logger.getLogger(GroundTruthParser.class.getName());
@@ -25,6 +32,12 @@ public class GroundTruthParser {
         this.queryUriPattern = queryUriPattern;
     }
 
+    /**
+     * Parses the ground truth file.
+     *
+     * @return map with a query URI as key and a set of 30 URIs of its true nearest neighbors as a value
+     * @throws IOException
+     */
     public Map<String, Set<String>> parse() throws IOException {
         Map<String, Set<String>> result = new HashMap<>();
         BufferedReader reader = new BufferedReader(new FileReader(filePath));

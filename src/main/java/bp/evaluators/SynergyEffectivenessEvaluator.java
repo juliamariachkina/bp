@@ -2,7 +2,10 @@ package bp.evaluators;
 
 import bp.CSVWriter;
 import bp.datasets.DatasetData;
-import bp.parsers.*;
+import bp.parsers.ErrOutputIterator;
+import bp.parsers.GroundTruthParser;
+import bp.parsers.ReducedOutputIterator;
+import bp.parsers.UnfilteredObjectsIterator;
 import bp.utils.Utility;
 import messif.objects.LocalAbstractObject;
 import messif.objects.util.AbstractObjectIterator;
@@ -13,8 +16,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+/**
+ * This class evaluates the synergy effectiveness. It has a method to limit the candidate sets identified by a technique
+ * to a value so that the median recall over all queries is equal to the MIN_RECALL required. It also contains a
+ * method to evaluate the median recall and the median candidate set size of any synergy of techniques.
+ */
 public class SynergyEffectivenessEvaluator {
     private static final Logger LOG = Logger.getLogger(SynergyEffectivenessEvaluator.class.getName());
 
@@ -63,8 +70,15 @@ public class SynergyEffectivenessEvaluator {
         return candSetSizePerQueryToMeetAccuracy[datasetData.queryCount / 2];
     }
 
+    /**
+     * Computes the median candidate set size required for the median recall of an indexing technique over all
+     * evaluated queries to be equal to the MIN_RECALL. Then reduces the candidate sets accordingly.
+     *
+     * @param errFilePath file path to the file where the records of all distance computations between query objects
+     *                    and data objects (and pivots) evaluated during query processings are stored.
+     * @throws IOException propagates the exception
+     */
     public void reduceErrOutputFilesToMedianDistComp(String errFilePath) throws IOException {
-        LOG.info("Processing " + errFilePath);
         Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         AbstractObjectIterator<LocalAbstractObject> pivotIter = Utility.getObjectsIterator(datasetData.pivotFilePath, datasetData.objectClass);
 
@@ -74,13 +88,22 @@ public class SynergyEffectivenessEvaluator {
         CSVWriter.writeReducedErrOutput(errFilePath, candSetMedian, filePathToStoreResults);
     }
 
+    /**
+     * Intersects candidate sets identified by indexing techniques and stored in files at errFilePaths.
+     * Evaluates the size and the recall of each intersected candidate set. Evaluates the median recall and median
+     * candidate size set of the synergy over all query objects.
+     *
+     * @param errFilePaths file path to the file where the records of all distance computations between query objects
+     *                     and data objects (and pivots) evaluated during query processings are stored.
+     * @throws IOException propagates the exception
+     */
     public void evaluateSynergyEffectiveness(String[] errFilePaths) throws IOException {
         if (errFilePaths.length < 2)
             return;
         long[] candSetSizes = new long[datasetData.queryCount];
         int[] recalls = new int[datasetData.queryCount];
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
-        Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
+        Map<String, Set<String>> groundTruth = new HashMap<>();
         List<ErrOutputIterator> iterators = new ArrayList<>();
         for (String errFilePath : errFilePaths) {
             iterators.add(errFilePath.contains("reducedOutput") ?
@@ -117,36 +140,4 @@ public class SynergyEffectivenessEvaluator {
         writer.close();
     }
 
-    public void evaluateCandSetsDiffs(String synFilePath, String errFilePath) throws IOException {
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
-        ErrOutputIterator synIt = synFilePath.contains("reducedOutput") ?
-                new ReducedOutputIterator(synFilePath) :
-                (synFilePath.contains("synergy") ?
-                        new SynergyIterator(synFilePath) :
-                        new UnfilteredObjectsIterator(synFilePath));
-        ErrOutputIterator errIt = errFilePath.contains("reducedOutput") ?
-                new ReducedOutputIterator(errFilePath) :
-                (errFilePath.contains("synergy") ?
-                        new SynergyIterator(errFilePath) :
-                        new UnfilteredObjectsIterator(errFilePath));
-        long[] candSetDiffs = new long[datasetData.queryCount];
-        for (int i = 0; i < datasetData.queryCount; ++i) {
-            synIt.parseNextQueryEvalErrOutput();
-            errIt.parseNextQueryEvalErrOutput();
-            String currentQueryURI = synIt.getCurrentQueryURI();
-            LOG.info("Processing [" + currentQueryURI + "]");
-            if (!errIt.getCurrentQueryURI().equals(currentQueryURI))
-                throw new IllegalArgumentException("Not all reduced outputs were stored in a sorted order");
-
-            errIt.getCurrentObjectUrisSet().removeAll(synIt.getCurrentObjectUrisSet());
-
-            CSVWriter.writeNextQueryCandSetDiffs(writer, currentQueryURI, errIt.getCurrentObjectUrisSet(), candSetDiffs, i);
-        }
-        Arrays.sort(candSetDiffs);
-        writer.println("Cand set reduction (counts objects from errFilePath candSet per query, " +
-                "which aren't present in synFilePath candSet for the same query);" + candSetDiffs[datasetData.queryCount / 2]);
-
-        writer.flush();
-        writer.close();
-    }
 }

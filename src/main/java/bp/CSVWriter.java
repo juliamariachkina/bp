@@ -1,6 +1,5 @@
 package bp;
 
-import bp.datasets.DatasetData;
 import bp.parsers.GroundTruthParser;
 import bp.parsers.UnfilteredObjectsIterator;
 import bp.utils.Utility;
@@ -10,7 +9,6 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 

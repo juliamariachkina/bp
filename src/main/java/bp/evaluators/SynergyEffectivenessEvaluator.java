@@ -103,7 +103,7 @@ public class SynergyEffectivenessEvaluator {
         long[] candSetSizes = new long[datasetData.queryCount];
         int[] recalls = new int[datasetData.queryCount];
         PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Utility.getOutputStream(filePathToStoreResults))));
-        Map<String, Set<String>> groundTruth = new HashMap<>();
+        Map<String, Set<String>> groundTruth = new GroundTruthParser(datasetData.groundTruthPath, datasetData.queryPattern).parse();
         List<ErrOutputIterator> iterators = new ArrayList<>();
         for (String errFilePath : errFilePaths) {
             iterators.add(errFilePath.contains("reducedOutput") ?
@@ -133,6 +133,7 @@ public class SynergyEffectivenessEvaluator {
         }
         Arrays.sort(recalls);
         Arrays.sort(candSetSizes);
+        writer.println("Median recalls;" + Arrays.toString(recalls));
         writer.println("Median recall;" + recalls[datasetData.queryCount / 2]);
         writer.println("Median candSet size;" + candSetSizes[datasetData.queryCount / 2]);
 
